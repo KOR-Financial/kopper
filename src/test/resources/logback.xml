@@ -1,0 +1,29 @@
+<!--
+  ~ Copyright 2021-2022 KOR Financial - All Rights Reserved.
+  ~
+  ~ Unauthorized copying of this file, via any medium is strictly prohibited.
+  ~ Proprietary and confidential.
+  -->
+
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="com.korfinancial" level="debug" />
+
+    <!-- configuration logging -->
+    <logger name="io.confluent.kafka.serializers.KafkaAvroSerializerConfig" level="warn" />
+    <logger name="io.confluent.kafka.serializers.KafkaAvroDeserializerConfig" level="warn" />
+    <logger name="org.apache.kafka.clients.producer.ProducerConfig" level="warn" />
+    <logger name="kafka.server.KafkaConfig" level="warn" />
+
+    <!-- Logging of kafka related tooling -->
+    <logger name="org.springframework.kafka.test.utils.KafkaTestUtils" level="debug" />
+
+    <root level="info">
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>

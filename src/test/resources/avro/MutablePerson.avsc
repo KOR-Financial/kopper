@@ -1,0 +1,27 @@
+{
+  "namespace": "com.korfinancial.streaming.model",
+  "name": "MutablePerson",
+  "type": "record",
+  "fields": [
+    {
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "name": "state",
+      "type": {
+        "type": "enum",
+        "symbols": ["Open", "Closed"],
+        "default": "Open",
+        "name": "PersonState"
+      }
+    },
+    {
+      "name": "siblings",
+      "type": {
+        "type": "array",
+        "items": "com.korfinancial.streaming.model.MutablePerson"
+      }
+    }
+  ]
+}

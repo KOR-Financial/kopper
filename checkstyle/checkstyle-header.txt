@@ -1,0 +1,8 @@
+^\Q/*\E$
+^\Q * Copyright \E(20\d\d-)?20\d\d\Q KOR Financial - All Rights Reserved.\E$
+^\Q *\E$
+^\Q * Unauthorized copying of this file, via any medium is strictly prohibited.\E$
+^\Q * Proprietary and confidential.\E$
+^\Q */\E$
+^$
+^.*$
