@@ -6,139 +6,139 @@
   ~ Proprietary and confidential.
   -->
 
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.korfinancial.streaming</groupId>
     <artifactId>kopper</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>Kopper</name>
-
-    <parent>
-        <groupId>com.korfinancial</groupId>
-        <artifactId>kor-streams-starter</artifactId>
-        <version>0.1.41</version>
-    </parent>
+    <packaging>pom</packaging>
 
     <properties>
-        <korstreams.version>0.1.41</korstreams.version>
-        <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
-        <spring-kafka.version>2.8.2</spring-kafka.version>
+        <java.version>17</java.version>
+        <spring-boot.version>2.6.3</spring-boot.version>
+        <kafka-streams.version>3.0.1-SNAPSHOT-PATCH</kafka-streams.version>
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <maven-checkstyle-plugin.version>3.1.2</maven-checkstyle-plugin.version>
+        <checkstyle.version>9.0.1</checkstyle.version>
+        <checkstyle.dir>${basedir}/checkstyle</checkstyle.dir>
+        <sonar.organization>kor-financial</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <spring-javaformat-checkstyle.version>0.0.31</spring-javaformat-checkstyle.version>
+        <kor.repository>KOR-Financial/kopper</kor.repository>
+        <project.scm.id>github</project.scm.id>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.korfinancial</groupId>
-            <artifactId>kor-streams-spring-boot-starter</artifactId>
-            <version>${korstreams.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct</artifactId>
-            <version>${org.mapstruct.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct-processor</artifactId>
-            <version>${org.mapstruct.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <version>${spring-boot.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.kafka</groupId>
-            <artifactId>spring-kafka-test</artifactId>
-            <version>${spring-kafka.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.korfinancial</groupId>
-            <artifactId>kor-streams-test</artifactId>
-            <version>${korstreams.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-streams</artifactId>
-            <version>3.0.1-SNAPSHOT-PATCH</version>
-        </dependency>
+    <modules>
+        <module>kopper-core</module>
+        <module>kopper-cast</module>
+    </modules>
 
-        <!-- Overrides confluent avro due to security issue -->
-        <dependency>
-            <groupId>org.apache.avro</groupId>
-            <artifactId>avro</artifactId>
-            <version>1.11.0</version>
-        </dependency>
+    <scm>
+        <connection>scm:git:git@github.com:${kor.repository}.git</connection>
+        <url>scm:git:git@github.com/${kor.repository}</url>
+        <developerConnection>scm:git:https://github.com/${kor.repository}.git</developerConnection>
+        <tag>kor-streams-starter-0.1.49-SNAPSHOT</tag>
+    </scm>
 
-        <dependency>
-            <groupId>org.awaitility</groupId>
-            <artifactId>awaitility</artifactId>
-            <version>3.0.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.jodah</groupId>
-            <artifactId>typetools</artifactId>
-            <version>0.6.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bitbucket.mstrobel</groupId>
-            <artifactId>procyon-reflection</artifactId>
-            <version>0.6.0</version>
-        </dependency>
-    </dependencies>
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/${kor.repository}</url>
+        </repository>
+    </distributionManagement>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka-streams</artifactId>
+                <version>${kafka-streams.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.avro</groupId>
+                <artifactId>avro</artifactId>
+                <version>1.11.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka-streams</artifactId>
+                <version>3.0.1-SNAPSHOT-PATCH</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <inherited>true</inherited>
                 <configuration>
-                    <release>${java.version}</release>
-                    <annotationProcessorPaths>
-                        <path>
-                            <groupId>org.mapstruct</groupId>
-                            <artifactId>mapstruct-processor</artifactId>
-                            <version>${org.mapstruct.version}</version>
-                        </path>
-                    </annotationProcessorPaths>
-                    <!-- due to problem in maven-compiler-plugin, for verbose mode add showWarnings -->
-                    <showWarnings>true</showWarnings>
-                    <compilerArgs>
-                        <arg>-Amapstruct.defaultComponentModel=spring</arg>
-                        <arg>-Amapstruct.defaultInjectionStrategy=constructor</arg>
-                        <arg>-Amapstruct.unmappedTargetPolicy=warn
-                        </arg> <!-- TODO: Switch to error - Currently a bug with records: https://github.com/mapstruct/mapstruct/issues/2635  -->
-                    </compilerArgs>
+                    <configLocation>${checkstyle.dir}/checkstyle.xml</configLocation>
+                    <headerLocation>${checkstyle.dir}/checkstyle-header.txt</headerLocation>
+                    <encoding>UTF-8</encoding>
+                    <consoleOutput>true</consoleOutput>
+                    <failOnViolation>true</failOnViolation>
+                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>checkstyle-validation</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M5</version>
-            </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring-boot.version}</version>
-                <configuration>
-                    <directories>
-                        <directory>src/main/avro</directory>
-                    </directories>
-                </configuration>
+                <groupId>io.spring.javaformat</groupId>
+                <artifactId>spring-javaformat-maven-plugin</artifactId>
+                <version>${spring-javaformat-checkstyle.version}</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <inherited>true</inherited>
+                        <goals>
+                            <goal>validate</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>${maven-checkstyle-plugin.version}</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.puppycrawl.tools</groupId>
+                            <artifactId>checkstyle</artifactId>
+                            <version>${checkstyle.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>io.spring.javaformat</groupId>
+                            <artifactId>spring-javaformat-checkstyle</artifactId>
+                            <version>${spring-javaformat-checkstyle.version}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 
     <profiles>
@@ -152,15 +152,22 @@
                         <enabled>true</enabled>
                     </snapshots>
                 </repository>
-                <repository>
-                    <id>confluent</id>
-                    <name>confluent</name>
-                    <url>https://packages.confluent.io/maven/</url>
-                </repository>
             </repositories>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
         </profile>
+        <profile>
+            <id>activate-in-module</id>
+            <activation>
+                <file>
+                    <exists>${basedir}/../checkstyle/checkstyle.xml</exists>
+                </file>
+            </activation>
+            <properties>
+                <checkstyle.dir>${basedir}/../checkstyle</checkstyle.dir>
+            </properties>
+        </profile>
     </profiles>
+
 </project>
