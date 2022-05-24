@@ -7,7 +7,7 @@
 
 package com.korfinancial.streaming.kopper.cast;
 
-public class UpcasterException extends Exception {
+public class UpcasterException extends RuntimeException {
 
 	public UpcasterException() {
 	}

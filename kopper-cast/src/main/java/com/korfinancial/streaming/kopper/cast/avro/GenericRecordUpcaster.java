@@ -9,6 +9,8 @@ package com.korfinancial.streaming.kopper.cast.avro;
 
 import com.korfinancial.streaming.kopper.cast.Upcaster;
 
+import com.korfinancial.streaming.kopper.cast.UpcasterException;
+
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.generic.GenericRecordBuilder;
@@ -27,20 +29,28 @@ public abstract class GenericRecordUpcaster implements Upcaster<GenericRecord, I
 		return targetSchemaVersion;
 	}
 
-	@Override
-	public GenericRecord upcast(GenericRecord input) {
-		GenericRecordBuilder builder = new GenericRecordBuilder(targetSchema);
-
-		for (Schema.Field inputField : input.getSchema().getFields()) {
-			Schema.Field targetField = targetSchema.getField(inputField.name());
-
-			if (targetField != null) {
-				builder.set(targetField, input.get(inputField.name()));
-			}
-		}
-
-		return upcast(builder, input).build();
+	protected Schema getTargetSchema() {
+		return targetSchema;
 	}
 
-	public abstract GenericRecordBuilder upcast(GenericRecordBuilder builder, GenericRecord input);
+	@Override
+	public GenericRecord upcast(GenericRecord input, Integer inputVersion) throws UpcasterException {
+		GenericRecordBuilder builder = new GenericRecordBuilder(targetSchema);
+
+		try {
+			for (Schema.Field inputField : input.getSchema().getFields()) {
+				Schema.Field targetField = targetSchema.getField(inputField.name());
+
+				if (targetField != null) {
+					builder.set(targetField, input.get(inputField.name()));
+				}
+			}
+
+			return upcast(builder, input).build();
+		} catch (Exception ex) {
+			throw new UpcasterException("unable to cast " + input.getSchema().getFullName() + "@" + inputVersion + " to " + targetSchema.getFullName() + "@" + targetSchemaVersion, ex);
+		}
+	}
+
+	public abstract GenericRecordBuilder upcast(GenericRecordBuilder builder, GenericRecord input) throws UpcasterException;
 }

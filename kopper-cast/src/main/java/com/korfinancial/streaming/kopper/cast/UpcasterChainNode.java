@@ -18,24 +18,35 @@ public class UpcasterChainNode<O, V extends Comparable<V>> {
 	}
 
 	public VersionedItem<O, V> doUpcast(VersionedItem<O, V> input) throws UpcasterException {
-		if (this.upcaster.getTargetVersion().compareTo(input.getVersion()) < 0) {
-			// -- move ahead in the chain if the input version is lower than the upcaster
-			// version
-			return this.next.doUpcast(input);
+		VersionedItem<O, V> result;
+
+		int cmp = input.getVersion().compareTo(this.upcaster.getTargetVersion());
+		if (cmp < 0) {
+			// -- the input version is less than the version of the upcaster. This
+			// -- means we will need to perform an upcast in order to get to the
+			// -- next version.
+			result = new VersionedItem<>(
+				this.upcaster.upcast(input.getItem(), input.getVersion()),
+				this.upcaster.getTargetVersion()
+			);
+
+		} else if (cmp > 0) {
+			// -- the input is of a later version than the version of the upcaster. In
+			// -- this case we just pass the input on to the next in line
+			result = input;
+
+		} else {
+			// -- the version of the input is equal to the version of the upcaster. We
+			// -- don't have to do anything in this case except for returning the input.
+			result = input;
 		}
 
-		// -- ask the upcaster to perform the upcast
-		O output = this.upcaster.upcast(input.getItem());
-
-		// -- terminate if there is no next element in the chain
+		// -- proceed to the next upcaster if there is one.
 		if (next == null) {
-			return new VersionedItem<>(output, this.upcaster.getTargetVersion());
+			return result;
+		} else {
+			return next.doUpcast(result);
 		}
-
-		// -- proceed to the next upcaster if there is one. The version is now equal to
-		// the version
-		// -- of the upcaster
-		return this.next.doUpcast(new VersionedItem<>(output, this.upcaster.getTargetVersion()));
 	}
 
 	public Upcaster<O, V> getUpcaster() {

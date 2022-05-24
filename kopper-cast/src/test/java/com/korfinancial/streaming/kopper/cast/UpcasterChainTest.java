@@ -11,24 +11,42 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Spy;
+import org.mockito.internal.matchers.Any;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
+@ExtendWith(MockitoExtension.class)
 class UpcasterChainTest {
 
-	private static final PropertiesUpcaster pu1 = new PropertiesUpcaster(2, Map.of("username", "user"));
+	private PropertiesUpcaster pu1;
 
-	private static final PropertiesUpcaster pu2 = new PropertiesUpcaster(3, Map.of("description", "description"));
+	private PropertiesUpcaster pu2;
 
-	private static final PropertiesUpcaster pu3 = new PropertiesUpcaster(5, Map.of("name", "name"));
+	private PropertiesUpcaster pu3;
 
-	private static final PropertiesUpcaster pu4 = new PropertiesUpcaster(6, Map.of("date", "date"));
+	private PropertiesUpcaster pu4;
 
-	private static final UpcasterChain<Properties, Integer> chain = new UpcasterChain<>();
+	private UpcasterChain<Properties, Integer> chain;
 
-	@BeforeAll
-	static void beforeAll() {
+	@BeforeEach
+	void beforeAll() {
+		pu1 = spy(new PropertiesUpcaster(2, Map.of("username", "user")));
+		pu2 = spy(new PropertiesUpcaster(3, Map.of("description", "description")));
+		pu3 = spy(new PropertiesUpcaster(5, Map.of("name", "name")));
+		pu4 = spy(new PropertiesUpcaster(6, Map.of("date", "date")));
+
+		chain = new UpcasterChain<>();
 		chain.registerUpcaster(pu1);
 		chain.registerUpcaster(pu2);
 		chain.registerUpcaster(pu3);
@@ -66,6 +84,11 @@ class UpcasterChainTest {
 
 		VersionedItem<Properties, Integer> result = chain.doUpcast(new VersionedItem<>(data, 1));
 
+		verify(pu1).upcast(any(), anyInt());
+		verify(pu2).upcast(any(), anyInt());
+		verify(pu3).upcast(any(), anyInt());
+		verify(pu4).upcast(any(), anyInt());
+
 		assertThat(result.getVersion()).isEqualTo(6);
 		assertThat(result.getItem()).isNotNull();
 		assertThat(result.getItem()).containsOnlyKeys("id", "username", "description", "name", "date");
@@ -79,6 +102,11 @@ class UpcasterChainTest {
 		data.setProperty("description", "description");
 
 		VersionedItem<Properties, Integer> result = chain.doUpcast(new VersionedItem<>(data, 4));
+
+		verify(pu1, never()).upcast(any(), anyInt());
+		verify(pu2, never()).upcast(any(), anyInt());
+		verify(pu3).upcast(any(), anyInt());
+		verify(pu4).upcast(any(), anyInt());
 
 		assertThat(result.getVersion()).isEqualTo(6);
 		assertThat(result.getItem()).isNotNull();
@@ -95,6 +123,11 @@ class UpcasterChainTest {
 		data.setProperty("date", "date");
 
 		VersionedItem<Properties, Integer> result = chain.doUpcast(new VersionedItem<>(data, 6));
+
+		verify(pu1, never()).upcast(any(), anyInt());
+		verify(pu2, never()).upcast(any(), anyInt());
+		verify(pu3, never()).upcast(any(), anyInt());
+		verify(pu4, never()).upcast(any(), anyInt());
 
 		assertThat(result.getVersion()).isEqualTo(6);
 		assertThat(result.getItem()).isNotNull();
@@ -118,7 +151,7 @@ class UpcasterChainTest {
 		}
 
 		@Override
-		public Properties upcast(Properties input) {
+		public Properties upcast(Properties input, Integer inputVersion) {
 			changes.forEach(input::setProperty);
 
 			return input;

@@ -11,6 +11,6 @@ public interface Upcaster<O, V extends Comparable<V>> {
 
 	V getTargetVersion();
 
-	O upcast(O input);
+	O upcast(O input, V inputVersion) throws UpcasterException;
 
 }
