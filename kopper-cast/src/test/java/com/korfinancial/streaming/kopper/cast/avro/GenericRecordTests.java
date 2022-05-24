@@ -12,12 +12,26 @@ import com.korfinancial.streaming.kopper.cast.UpcasterChain;
 import com.korfinancial.streaming.kopper.cast.UpcasterException;
 import com.korfinancial.streaming.kopper.cast.VersionedItem;
 
+import org.apache.avro.SchemaCompatibility;
 import org.apache.avro.generic.GenericRecord;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class GenericRecordTests {
+
+	@Test
+	void readV1ToV2WithoutUpcaster() throws UpcasterException {
+		UpcasterChain<GenericRecord, Integer> chain = new UpcasterChain<>();
+
+		GenericRecord v1 = Payloads.RECORD_V1;
+		VersionedItem<GenericRecord, Integer> result = chain.doUpcast(new VersionedItem<>(v1, 1));
+		assertThat(result.getVersion()).isEqualTo(1);
+
+		// -- make sure the schema we read is compatible with SCHEMA_V2
+		SchemaCompatibility.SchemaPairCompatibility compatibility = SchemaCompatibility.checkReaderWriterCompatibility(Schemas.SCHEMA_V2, result.getItem().getSchema());
+		assertThat(compatibility.getResult()).isEqualTo(SchemaCompatibility.SchemaCompatibilityResult.compatible());
+	}
 
 	// == V2 ==================================================================
 
