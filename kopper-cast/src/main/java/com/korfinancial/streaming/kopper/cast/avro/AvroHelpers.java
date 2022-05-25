@@ -5,15 +5,15 @@
  * Proprietary and confidential.
  */
 
-package com.korfinancial.streaming.kopper.cast.expressions;
+package com.korfinancial.streaming.kopper.cast.avro;
+
+import java.util.Map;
 
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.generic.GenericRecordBuilder;
 
-import java.util.Map;
-
-public class AvroFunctions {
+public abstract class AvroHelpers {
 
 	public static GenericRecord asRecord(Schema schema, Map<String, Object> fields) {
 		GenericRecordBuilder builder = new GenericRecordBuilder(schema);
@@ -22,4 +22,5 @@ public class AvroFunctions {
 
 		return builder.build();
 	}
+
 }

@@ -7,7 +7,29 @@
 
 package com.korfinancial.streaming.kopper.cast;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 public class UpcasterChain<O, V extends Comparable<V>> {
+
+	private final String id;
+
+	public static <O, V extends Comparable<V>> Builder<O, V> builder() {
+		return new UpcasterChain.Builder<>(UUID.randomUUID().toString());
+	}
+
+	public static <O, V extends Comparable<V>> Builder<O, V> builder(String id) {
+		return new UpcasterChain.Builder<>(id);
+	}
+
+	public UpcasterChain() {
+		this(UUID.randomUUID().toString());
+	}
+
+	public UpcasterChain(String id) {
+		this.id = id;
+	}
 
 	protected UpcasterChainNode<O, V> root;
 
@@ -36,6 +58,37 @@ public class UpcasterChain<O, V extends Comparable<V>> {
 
 		// -- perform the upcasting
 		return root.doUpcast(input);
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public static class Builder<O, V extends Comparable<V>> {
+
+		protected final String id;
+
+		protected final List<Upcaster<O, V>> upcasters;
+
+		public Builder(String id) {
+			this.id = id;
+			this.upcasters = new ArrayList<>();
+		}
+
+		public Builder<O, V> register(Upcaster<O, V> upcaster) {
+			this.upcasters.add(upcaster);
+
+			return this;
+		}
+
+		public UpcasterChain<O, V> build() {
+			UpcasterChain<O, V> chain = new UpcasterChain<>(id);
+
+			upcasters.forEach(chain::registerUpcaster);
+
+			return chain;
+		}
+
 	}
 
 }

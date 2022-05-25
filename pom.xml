@@ -27,6 +27,8 @@
         <spring-javaformat-checkstyle.version>0.0.31</spring-javaformat-checkstyle.version>
         <kor.repository>KOR-Financial/kopper</kor.repository>
         <project.scm.id>github</project.scm.id>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
     </properties>
 
     <modules>

@@ -7,25 +7,26 @@
 
 package com.korfinancial.streaming.kopper.cast.avro;
 
-import com.korfinancial.streaming.kopper.cast.Upcaster;
-
-import com.korfinancial.streaming.kopper.cast.UpcasterException;
-
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.generic.GenericRecordBuilder;
 
-public abstract class GenericRecordUpcaster implements Upcaster<GenericRecord, Integer> {
-	private final Schema targetSchema;
-	private final Integer targetSchemaVersion;
+import com.korfinancial.streaming.kopper.cast.Upcaster;
+import com.korfinancial.streaming.kopper.cast.UpcasterException;
 
-	public GenericRecordUpcaster(Schema targetSchema, Integer targetSchemaVersion) {
+public abstract class AvroUpcaster<V extends Comparable<V>> implements Upcaster<GenericRecord, V> {
+
+	private final Schema targetSchema;
+
+	private final V targetSchemaVersion;
+
+	public AvroUpcaster(Schema targetSchema, V targetSchemaVersion) {
 		this.targetSchema = targetSchema;
 		this.targetSchemaVersion = targetSchemaVersion;
 	}
 
 	@Override
-	public Integer getTargetVersion() {
+	public V getTargetVersion() {
 		return targetSchemaVersion;
 	}
 
@@ -34,7 +35,7 @@ public abstract class GenericRecordUpcaster implements Upcaster<GenericRecord, I
 	}
 
 	@Override
-	public GenericRecord upcast(GenericRecord input, Integer inputVersion) throws UpcasterException {
+	public GenericRecord upcast(GenericRecord input, V inputVersion) throws UpcasterException {
 		GenericRecordBuilder builder = new GenericRecordBuilder(targetSchema);
 
 		try {
@@ -47,10 +48,14 @@ public abstract class GenericRecordUpcaster implements Upcaster<GenericRecord, I
 			}
 
 			return upcast(builder, input).build();
-		} catch (Exception ex) {
-			throw new UpcasterException("unable to cast " + input.getSchema().getFullName() + "@" + inputVersion + " to " + targetSchema.getFullName() + "@" + targetSchemaVersion, ex);
+		}
+		catch (Exception ex) {
+			throw new UpcasterException("unable to cast " + input.getSchema().getFullName() + "@" + inputVersion
+					+ " to " + targetSchema.getFullName() + "@" + targetSchemaVersion, ex);
 		}
 	}
 
-	public abstract GenericRecordBuilder upcast(GenericRecordBuilder builder, GenericRecord input) throws UpcasterException;
+	public abstract GenericRecordBuilder upcast(GenericRecordBuilder builder, GenericRecord input)
+			throws UpcasterException;
+
 }
