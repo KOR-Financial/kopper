@@ -14,14 +14,17 @@ import org.springframework.expression.PropertyAccessor;
 import org.springframework.expression.TypedValue;
 
 public class GenericRecordPropertyAccessor implements PropertyAccessor {
+
 	@Override
 	public Class<?>[] getSpecificTargetClasses() {
-		return new Class[]{GenericRecord.class};
+		return new Class[] { GenericRecord.class };
 	}
 
 	@Override
 	public boolean canRead(EvaluationContext context, Object target, String name) throws AccessException {
-		if (target == null) return false;
+		if (target == null) {
+			return false;
+		}
 
 		return target instanceof GenericRecord;
 	}
@@ -32,7 +35,8 @@ public class GenericRecordPropertyAccessor implements PropertyAccessor {
 
 		if (record.hasField(name)) {
 			return new TypedValue(record.get(name));
-		} else {
+		}
+		else {
 			return new TypedValue(null);
 		}
 	}
@@ -46,4 +50,5 @@ public class GenericRecordPropertyAccessor implements PropertyAccessor {
 	public void write(EvaluationContext context, Object target, String name, Object newValue) throws AccessException {
 		throw new AccessException("Not allowed");
 	}
+
 }
