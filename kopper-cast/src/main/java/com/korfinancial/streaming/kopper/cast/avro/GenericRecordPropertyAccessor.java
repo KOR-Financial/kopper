@@ -8,6 +8,7 @@
 package com.korfinancial.streaming.kopper.cast.avro;
 
 import org.apache.avro.generic.GenericRecord;
+import org.apache.avro.util.Utf8;
 import org.springframework.expression.AccessException;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.PropertyAccessor;
@@ -34,7 +35,7 @@ public class GenericRecordPropertyAccessor implements PropertyAccessor {
 		GenericRecord record = (GenericRecord) target;
 
 		if (record.hasField(name)) {
-			return new TypedValue(record.get(name));
+			return new TypedValue(convertValue(record.get(name)));
 		}
 		else {
 			return new TypedValue(null);
@@ -49,6 +50,18 @@ public class GenericRecordPropertyAccessor implements PropertyAccessor {
 	@Override
 	public void write(EvaluationContext context, Object target, String name, Object newValue) throws AccessException {
 		throw new AccessException("Not allowed");
+	}
+
+	protected Object convertValue(Object input) {
+		if (input == null) {
+			return null;
+		}
+
+		if (input instanceof Utf8 utf8) {
+			return utf8.toString();
+		}
+
+		return input;
 	}
 
 }
