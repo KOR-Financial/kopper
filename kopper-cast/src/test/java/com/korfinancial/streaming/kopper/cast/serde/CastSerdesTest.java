@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import com.korfinancial.streaming.kopper.cast.avro.AvroHelpers;
 import com.korfinancial.streaming.kopper.cast.avro.DeclarativeAvroUpcaster;
 import com.korfinancial.streaming.kopper.cast.avro.Payloads;
-import com.korfinancial.streaming.kopper.cast.registry.LocalUpcasterRegistry;
+import com.korfinancial.streaming.kopper.cast.registry.InMemoryUpcasterRegistry;
 import com.korfinancial.streaming.kopper.cast.registry.UpcasterRegistry;
 import com.korfinancial.streaming.kopper.cast.sr.AvroUpcasterChain;
 
@@ -58,7 +58,7 @@ class CastSerdesTest {
 
 	@BeforeEach
 	void setup() throws Exception {
-		UpcasterRegistry upcasterRegistry = new LocalUpcasterRegistry();
+		UpcasterRegistry upcasterRegistry = new InMemoryUpcasterRegistry();
 
 		// @formatter-off
 		upcasterRegistry.registerChain(AvroUpcasterChain.builder(SUBJECT)

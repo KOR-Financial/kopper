@@ -26,7 +26,7 @@ import com.korfinancial.streaming.kopper.cast.VersionedItem;
 import com.korfinancial.streaming.kopper.cast.avro.AvroHelpers;
 import com.korfinancial.streaming.kopper.cast.avro.DeclarativeAvroUpcaster;
 import com.korfinancial.streaming.kopper.cast.avro.Payloads;
-import com.korfinancial.streaming.kopper.cast.registry.LocalUpcasterRegistry;
+import com.korfinancial.streaming.kopper.cast.registry.InMemoryUpcasterRegistry;
 import com.korfinancial.streaming.kopper.cast.registry.UpcasterRegistry;
 
 import static com.korfinancial.streaming.kopper.cast.avro.Schemas.SCHEMA_V1;
@@ -56,7 +56,7 @@ class AvroSchemaRegistryUpcasterTest {
 
 	@BeforeEach
 	void beforeEach() throws Exception {
-		upcasterRegistry = new LocalUpcasterRegistry();
+		upcasterRegistry = new InMemoryUpcasterRegistry();
 
 		// @formatter-off
 		upcasterRegistry.registerChain(AvroUpcasterChain.builder(SUBJECT)

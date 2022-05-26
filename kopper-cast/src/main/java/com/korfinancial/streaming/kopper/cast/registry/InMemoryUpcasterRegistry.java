@@ -12,15 +12,15 @@ import java.util.Map;
 
 import com.korfinancial.streaming.kopper.cast.UpcasterChain;
 
-public class LocalUpcasterRegistry implements UpcasterRegistry {
+public class InMemoryUpcasterRegistry implements UpcasterRegistry {
 
 	private final Map<String, UpcasterChain<?, Integer>> chains;
 
-	public LocalUpcasterRegistry(Map<String, UpcasterChain<?, Integer>> chains) {
+	public InMemoryUpcasterRegistry(Map<String, UpcasterChain<?, Integer>> chains) {
 		this.chains = chains;
 	}
 
-	public LocalUpcasterRegistry() {
+	public InMemoryUpcasterRegistry() {
 		this(new HashMap<>());
 	}
 
