@@ -118,6 +118,10 @@ public final class DeclarativeAvroUpcaster<V extends Comparable<V>> implements U
 		}
 	}
 
+	public Map<String, String> getExpressions() {
+		return this.evaluator.getExpressions();
+	}
+
 	public static class Builder<V extends Comparable<V>> {
 
 		private final Schema targetSchema;

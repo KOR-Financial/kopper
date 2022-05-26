@@ -72,8 +72,12 @@ public class SpelEvaluator implements Evaluator {
 		evaluationContext.setVariable(name, value);
 	}
 
-	public Map<String, Expression> getExpressions() {
-		return expressions;
+	public Map<String, String> getExpressions() {
+		Map<String, String> result = new HashMap<>();
+
+		expressions.forEach((s, expression) -> result.put(s, expression.getExpressionString()));
+
+		return result;
 	}
 
 	public EvaluationContext getEvaluationContext() {

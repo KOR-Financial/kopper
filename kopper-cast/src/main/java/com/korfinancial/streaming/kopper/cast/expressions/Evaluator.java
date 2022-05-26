@@ -21,4 +21,6 @@ public interface Evaluator {
 
 	void setVariable(String name, @Nullable Object value);
 
+	Map<String, String> getExpressions();
+
 }

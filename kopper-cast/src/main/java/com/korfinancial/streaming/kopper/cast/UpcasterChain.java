@@ -64,6 +64,10 @@ public class UpcasterChain<O, V extends Comparable<V>> {
 		return id;
 	}
 
+	public UpcasterChainNode<O, V> getRoot() {
+		return root;
+	}
+
 	public static class Builder<O, V extends Comparable<V>> {
 
 		protected final String id;
