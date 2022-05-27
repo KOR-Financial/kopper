@@ -7,159 +7,47 @@
 
 package com.korfinancial.streaming.kopper.cast.avro;
 
-import org.apache.avro.SchemaCompatibility;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.generic.GenericRecordBuilder;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import com.korfinancial.streaming.kopper.cast.UpcasterChain;
 import com.korfinancial.streaming.kopper.cast.UpcasterException;
-import com.korfinancial.streaming.kopper.cast.VersionedItem;
 
-import static org.assertj.core.api.Assertions.assertThat;
+public class AvroUpcasterTests extends AbstractUpcasterTests {
 
-public class AvroUpcasterTests {
+	private static AvroUpcasterChain chain;
 
-	@Test
-	void readV1ToV2WithoutUpcaster() throws UpcasterException {
-		UpcasterChain<GenericRecord, Integer> chain = new UpcasterChain<>();
-
-		GenericRecord v1 = Payloads.RECORD_V1;
-		VersionedItem<GenericRecord, Integer> result = chain.doUpcast(new VersionedItem<>(v1, 1));
-		assertThat(result.getVersion()).isEqualTo(1);
-
-		// -- make sure the schema we read is compatible with SCHEMA_V2
-		SchemaCompatibility.SchemaPairCompatibility compatibility = SchemaCompatibility
-				.checkReaderWriterCompatibility(Schemas.SCHEMA_V2, result.getItem().getSchema());
-		assertThat(compatibility.getResult()).isEqualTo(SchemaCompatibility.SchemaCompatibilityResult.compatible());
-	}
-
-	// == V3 ==================================================================
-
-	@Test
-	void readV1ToV3() throws UpcasterException {
-		UpcasterChain<GenericRecord, Integer> chain = new UpcasterChain<>();
-		chain.registerUpcaster(upcasterV3());
-
-		GenericRecord v1 = Payloads.RECORD_V1;
-		VersionedItem<GenericRecord, Integer> result = chain.doUpcast(new VersionedItem<>(v1, 1));
-		assertThat(result.getVersion()).isEqualTo(3);
-		assertThat(result.getItem()).isEqualTo(Payloads.RECORD_V3_WITHOUT_AGE);
-	}
-
-	@Test
-	void readV2ToV3() throws UpcasterException {
-		UpcasterChain<GenericRecord, Integer> chain = new UpcasterChain<>();
-		chain.registerUpcaster(upcasterV3());
-
-		GenericRecord v2 = Payloads.RECORD_V2_WITH_AGE;
-		VersionedItem<GenericRecord, Integer> result = chain.doUpcast(new VersionedItem<>(v2, 2));
-
-		assertThat(result.getVersion()).isEqualTo(3);
-		assertThat(result.getItem()).isEqualTo(Payloads.RECORD_V3);
-	}
-
-	// == V4 ==================================================================
-
-	@Test
-	void readV1ToV4() throws UpcasterException {
-		UpcasterChain<GenericRecord, Integer> chain = new UpcasterChain<>();
-		chain.registerUpcaster(upcasterV3());
-		chain.registerUpcaster(upcasterV4());
-
-		GenericRecord v1 = Payloads.RECORD_V1;
-		VersionedItem<GenericRecord, Integer> result = chain.doUpcast(new VersionedItem<>(v1, 1));
-
-		assertThat(result.getVersion()).isEqualTo(4);
-		assertThat(result.getItem()).isEqualTo(Payloads.RECORD_V4_WITHOUT_AGE);
-	}
-
-	@Test
-	void readV2ToV4() throws UpcasterException {
-		UpcasterChain<GenericRecord, Integer> chain = new UpcasterChain<>();
-		chain.registerUpcaster(upcasterV3());
-		chain.registerUpcaster(upcasterV4());
-
-		GenericRecord v2 = Payloads.RECORD_V2_WITH_AGE;
-		VersionedItem<GenericRecord, Integer> result = chain.doUpcast(new VersionedItem<>(v2, 2));
-
-		assertThat(result.getVersion()).isEqualTo(4);
-		assertThat(result.getItem()).isEqualTo(Payloads.RECORD_V4);
-	}
-
-	@Test
-	void readV3ToV4() throws UpcasterException {
-		UpcasterChain<GenericRecord, Integer> chain = new UpcasterChain<>();
-		chain.registerUpcaster(upcasterV3());
-		chain.registerUpcaster(upcasterV4());
-
-		GenericRecord v3 = Payloads.RECORD_V3;
-		VersionedItem<GenericRecord, Integer> result = chain.doUpcast(new VersionedItem<>(v3, 3));
-
-		assertThat(result.getVersion()).isEqualTo(4);
-		assertThat(result.getItem()).isEqualTo(Payloads.RECORD_V4);
-	}
-
-	// == V4 ==================================================================
-
-	@Test
-	void readV1ToV5() throws UpcasterException {
-		UpcasterChain<GenericRecord, Integer> chain = new UpcasterChain<>();
+	@BeforeAll
+	static void beforeAll() {
+		chain = new AvroUpcasterChain();
 		chain.registerUpcaster(upcasterV3());
 		chain.registerUpcaster(upcasterV4());
 		chain.registerUpcaster(upcasterV5());
+	}
 
-		GenericRecord v1 = Payloads.RECORD_V1;
-		VersionedItem<GenericRecord, Integer> result = chain.doUpcast(new VersionedItem<>(v1, 1));
-
-		assertThat(result.getVersion()).isEqualTo(5);
-		assertThat(result.getItem()).isEqualTo(Payloads.RECORD_V5_WITHOUT_AGE);
+	@Test
+	void readV1ToV5() throws UpcasterException {
+		readV1ToV5(chain);
 	}
 
 	@Test
 	void readV2ToV5() throws UpcasterException {
-		UpcasterChain<GenericRecord, Integer> chain = new UpcasterChain<>();
-		chain.registerUpcaster(upcasterV3());
-		chain.registerUpcaster(upcasterV4());
-		chain.registerUpcaster(upcasterV5());
-
-		GenericRecord v2 = Payloads.RECORD_V2_WITH_AGE;
-		VersionedItem<GenericRecord, Integer> result = chain.doUpcast(new VersionedItem<>(v2, 2));
-
-		assertThat(result.getVersion()).isEqualTo(5);
-		assertThat(result.getItem()).isEqualTo(Payloads.RECORD_V5);
+		readV2ToV5(chain);
 	}
 
 	@Test
 	void readV3ToV5() throws UpcasterException {
-		UpcasterChain<GenericRecord, Integer> chain = new UpcasterChain<>();
-		chain.registerUpcaster(upcasterV3());
-		chain.registerUpcaster(upcasterV4());
-		chain.registerUpcaster(upcasterV5());
-
-		GenericRecord v3 = Payloads.RECORD_V3;
-		VersionedItem<GenericRecord, Integer> result = chain.doUpcast(new VersionedItem<>(v3, 3));
-
-		assertThat(result.getVersion()).isEqualTo(5);
-		assertThat(result.getItem()).isEqualTo(Payloads.RECORD_V5);
+		readV3ToV5(chain);
 	}
 
 	@Test
 	void readV4ToV5() throws UpcasterException {
-		UpcasterChain<GenericRecord, Integer> chain = new UpcasterChain<>();
-		chain.registerUpcaster(upcasterV3());
-		chain.registerUpcaster(upcasterV4());
-		chain.registerUpcaster(upcasterV5());
-
-		GenericRecord v4 = Payloads.RECORD_V4;
-		VersionedItem<GenericRecord, Integer> result = chain.doUpcast(new VersionedItem<>(v4, 4));
-
-		assertThat(result.getVersion()).isEqualTo(5);
-		assertThat(result.getItem()).isEqualTo(Payloads.RECORD_V5);
+		readV4ToV5(chain);
 	}
 
-	private AvroUpcaster<Integer> upcasterV3() {
-		return new AvroUpcaster<>(Schemas.SCHEMA_V3, 3) {
+	private static AvroUpcaster upcasterV3() {
+		return new AvroUpcaster(Schemas.SCHEMA_V3, 3) {
 			@Override
 			public GenericRecordBuilder upcast(GenericRecordBuilder builder, GenericRecord input) {
 				// -- check if the age field is on the input
@@ -175,8 +63,8 @@ public class AvroUpcasterTests {
 		};
 	}
 
-	private AvroUpcaster<Integer> upcasterV4() {
-		return new AvroUpcaster<>(Schemas.SCHEMA_V4, 4) {
+	private static AvroUpcaster upcasterV4() {
+		return new AvroUpcaster(Schemas.SCHEMA_V4, 4) {
 			@Override
 			public GenericRecordBuilder upcast(GenericRecordBuilder builder, GenericRecord input) {
 				// -- check if the name was set
@@ -203,8 +91,8 @@ public class AvroUpcasterTests {
 		};
 	}
 
-	private AvroUpcaster<Integer> upcasterV5() {
-		return new AvroUpcaster<>(Schemas.SCHEMA_V5, 5) {
+	private static AvroUpcaster upcasterV5() {
+		return new AvroUpcaster(Schemas.SCHEMA_V5, 5) {
 			@Override
 			public GenericRecordBuilder upcast(GenericRecordBuilder builder, GenericRecord input) {
 				// -- check if the name was set

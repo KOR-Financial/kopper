@@ -11,15 +11,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class UpcasterChain<O, V extends Comparable<V>> {
+public class UpcasterChain<O> {
 
 	private final String id;
 
-	public static <O, V extends Comparable<V>> Builder<O, V> builder() {
+	public static <O> Builder<O> builder() {
 		return new UpcasterChain.Builder<>(UUID.randomUUID().toString());
 	}
 
-	public static <O, V extends Comparable<V>> Builder<O, V> builder(String id) {
+	public static <O> Builder<O> builder(String id) {
 		return new UpcasterChain.Builder<>(id);
 	}
 
@@ -31,10 +31,10 @@ public class UpcasterChain<O, V extends Comparable<V>> {
 		this.id = id;
 	}
 
-	protected UpcasterChainNode<O, V> root;
+	protected UpcasterChainNode<O> root;
 
-	public void registerUpcaster(Upcaster<O, V> upcaster) {
-		UpcasterChainNode<O, V> node = new UpcasterChainNode<>(upcaster);
+	public void registerUpcaster(Upcaster<O> upcaster) {
+		UpcasterChainNode<O> node = new UpcasterChainNode<>(upcaster);
 
 		if (root == null) {
 			root = node;
@@ -42,7 +42,7 @@ public class UpcasterChain<O, V extends Comparable<V>> {
 		}
 
 		// -- move to the last element
-		UpcasterChainNode<O, V> tail = root;
+		UpcasterChainNode<O> tail = root;
 		while (tail.getNext() != null) {
 			tail = tail.getNext();
 		}
@@ -50,7 +50,7 @@ public class UpcasterChain<O, V extends Comparable<V>> {
 		tail.setNext(node);
 	}
 
-	public VersionedItem<O, V> doUpcast(VersionedItem<O, V> input) throws UpcasterException {
+	public VersionedItem<O> doUpcast(VersionedItem<O> input) throws UpcasterException {
 		// -- return the input if there are no upcasters available
 		if (root == null) {
 			return input;
@@ -64,25 +64,25 @@ public class UpcasterChain<O, V extends Comparable<V>> {
 		return id;
 	}
 
-	public static class Builder<O, V extends Comparable<V>> {
+	public static class Builder<O> {
 
 		protected final String id;
 
-		protected final List<Upcaster<O, V>> upcasters;
+		protected final List<Upcaster<O>> upcasters;
 
 		public Builder(String id) {
 			this.id = id;
 			this.upcasters = new ArrayList<>();
 		}
 
-		public Builder<O, V> register(Upcaster<O, V> upcaster) {
+		public Builder<O> register(Upcaster<O> upcaster) {
 			this.upcasters.add(upcaster);
 
 			return this;
 		}
 
-		public UpcasterChain<O, V> build() {
-			UpcasterChain<O, V> chain = new UpcasterChain<>(id);
+		public UpcasterChain<O> build() {
+			UpcasterChain<O> chain = new UpcasterChain<>(id);
 
 			upcasters.forEach(chain::registerUpcaster);
 

@@ -50,13 +50,13 @@ public class UpcastingDeserializer extends AbstractKafkaAvroDeserializer impleme
 			throw new RuntimeException("Only records are supported as the root elements.");
 		}
 
-		UpcasterChain<GenericRecord, Integer> chain = upcasterRegistry.getUpcasters(topic + "-value");
+		UpcasterChain<GenericRecord> chain = upcasterRegistry.getUpcasters(topic + "-value");
 		if (chain == null) {
 			// -- no upcasters available, so we will just return what we got from the wire
 			return (GenericRecord) gr.container();
 		}
 
-		VersionedItem<GenericRecord, Integer> result = chain
+		VersionedItem<GenericRecord> result = chain
 				.doUpcast(new VersionedItem<>((GenericRecord) gr.container(), gr.version()));
 		return result.getItem();
 	}

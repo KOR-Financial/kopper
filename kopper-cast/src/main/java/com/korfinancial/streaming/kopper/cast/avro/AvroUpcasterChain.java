@@ -5,7 +5,7 @@
  * Proprietary and confidential.
  */
 
-package com.korfinancial.streaming.kopper.cast.sr;
+package com.korfinancial.streaming.kopper.cast.avro;
 
 import java.util.UUID;
 
@@ -13,13 +13,13 @@ import org.apache.avro.generic.GenericRecord;
 
 import com.korfinancial.streaming.kopper.cast.UpcasterChain;
 
-public class AvroUpcasterChain extends UpcasterChain<GenericRecord, Integer> {
+public class AvroUpcasterChain extends UpcasterChain<GenericRecord> {
 
-	public static Builder<GenericRecord, Integer> builder() {
+	public static Builder<GenericRecord> builder() {
 		return new UpcasterChain.Builder<>(UUID.randomUUID().toString());
 	}
 
-	public static Builder<GenericRecord, Integer> builder(String id) {
+	public static Builder<GenericRecord> builder(String id) {
 		return new UpcasterChain.Builder<>(id);
 	}
 

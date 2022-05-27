@@ -21,11 +21,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.korfinancial.streaming.kopper.cast.avro.AvroHelpers;
+import com.korfinancial.streaming.kopper.cast.avro.AvroUpcasterChain;
 import com.korfinancial.streaming.kopper.cast.avro.DeclarativeAvroUpcaster;
 import com.korfinancial.streaming.kopper.cast.avro.Payloads;
 import com.korfinancial.streaming.kopper.cast.registry.InMemoryUpcasterRegistry;
 import com.korfinancial.streaming.kopper.cast.registry.UpcasterRegistry;
-import com.korfinancial.streaming.kopper.cast.sr.AvroUpcasterChain;
 
 import static com.korfinancial.streaming.kopper.cast.avro.Schemas.SCHEMA_V1;
 import static com.korfinancial.streaming.kopper.cast.avro.Schemas.SCHEMA_V2;

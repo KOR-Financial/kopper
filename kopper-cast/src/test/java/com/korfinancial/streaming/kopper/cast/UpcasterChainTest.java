@@ -33,7 +33,7 @@ class UpcasterChainTest {
 
 	private PropertiesUpcaster pu4;
 
-	private UpcasterChain<Properties, Integer> chain;
+	private UpcasterChain<Properties> chain;
 
 	@BeforeEach
 	void beforeAll() {
@@ -43,15 +43,14 @@ class UpcasterChainTest {
 		pu4 = spy(new PropertiesUpcaster(6, Map.of("date", "date")));
 
 		// @formatter-off
-		chain = UpcasterChain.<Properties, Integer>builder().register(pu1).register(pu2).register(pu3).register(pu4)
-				.build();
+		chain = UpcasterChain.<Properties>builder().register(pu1).register(pu2).register(pu3).register(pu4).build();
 		// @formatter-on
 	}
 
 	@Test
 	void testChainConstruction() {
 		// -- check the upcasters are there
-		UpcasterChainNode<Properties, Integer> current = chain.root;
+		UpcasterChainNode<Properties> current = chain.root;
 		assertThat(current.getVersion()).isEqualTo(2);
 		assertThat(current.getUpcaster()).isEqualTo(pu1);
 		assertThat(current.getNext()).isNotNull();
@@ -77,7 +76,7 @@ class UpcasterChainTest {
 		Properties data = new Properties();
 		data.setProperty("id", "ID");
 
-		VersionedItem<Properties, Integer> result = chain.doUpcast(new VersionedItem<>(data, 1));
+		VersionedItem<Properties> result = chain.doUpcast(new VersionedItem<>(data, 1));
 
 		verify(pu1).upcast(any(), anyInt());
 		verify(pu2).upcast(any(), anyInt());
@@ -96,7 +95,7 @@ class UpcasterChainTest {
 		data.setProperty("username", "luser");
 		data.setProperty("description", "description");
 
-		VersionedItem<Properties, Integer> result = chain.doUpcast(new VersionedItem<>(data, 4));
+		VersionedItem<Properties> result = chain.doUpcast(new VersionedItem<>(data, 4));
 
 		verify(pu1, never()).upcast(any(), anyInt());
 		verify(pu2, never()).upcast(any(), anyInt());
@@ -117,7 +116,7 @@ class UpcasterChainTest {
 		data.setProperty("name", "name");
 		data.setProperty("date", "date");
 
-		VersionedItem<Properties, Integer> result = chain.doUpcast(new VersionedItem<>(data, 6));
+		VersionedItem<Properties> result = chain.doUpcast(new VersionedItem<>(data, 6));
 
 		verify(pu1, never()).upcast(any(), anyInt());
 		verify(pu2, never()).upcast(any(), anyInt());
@@ -129,7 +128,7 @@ class UpcasterChainTest {
 		assertThat(result.getItem()).containsOnlyKeys("id", "username", "description", "name", "date");
 	}
 
-	static class PropertiesUpcaster implements Upcaster<Properties, Integer> {
+	static class PropertiesUpcaster implements Upcaster<Properties> {
 
 		private final Integer targetVersion;
 

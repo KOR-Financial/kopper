@@ -14,19 +14,19 @@ import org.apache.avro.generic.GenericRecordBuilder;
 import com.korfinancial.streaming.kopper.cast.Upcaster;
 import com.korfinancial.streaming.kopper.cast.UpcasterException;
 
-public abstract class AvroUpcaster<V extends Comparable<V>> implements Upcaster<GenericRecord, V> {
+public abstract class AvroUpcaster implements Upcaster<GenericRecord> {
 
 	private final Schema targetSchema;
 
-	private final V targetSchemaVersion;
+	private final Integer targetSchemaVersion;
 
-	public AvroUpcaster(Schema targetSchema, V targetSchemaVersion) {
+	public AvroUpcaster(Schema targetSchema, Integer targetSchemaVersion) {
 		this.targetSchema = targetSchema;
 		this.targetSchemaVersion = targetSchemaVersion;
 	}
 
 	@Override
-	public V getTargetVersion() {
+	public Integer getTargetVersion() {
 		return targetSchemaVersion;
 	}
 
@@ -35,7 +35,7 @@ public abstract class AvroUpcaster<V extends Comparable<V>> implements Upcaster<
 	}
 
 	@Override
-	public GenericRecord upcast(GenericRecord input, V inputVersion) throws UpcasterException {
+	public GenericRecord upcast(GenericRecord input, Integer inputVersion) throws UpcasterException {
 		GenericRecordBuilder builder = new GenericRecordBuilder(targetSchema);
 
 		try {

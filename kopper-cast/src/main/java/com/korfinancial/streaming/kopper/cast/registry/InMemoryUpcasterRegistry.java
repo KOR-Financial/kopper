@@ -14,9 +14,9 @@ import com.korfinancial.streaming.kopper.cast.UpcasterChain;
 
 public class InMemoryUpcasterRegistry implements UpcasterRegistry {
 
-	private final Map<String, UpcasterChain<?, Integer>> chains;
+	private final Map<String, UpcasterChain<?>> chains;
 
-	public InMemoryUpcasterRegistry(Map<String, UpcasterChain<?, Integer>> chains) {
+	public InMemoryUpcasterRegistry(Map<String, UpcasterChain<?>> chains) {
 		this.chains = chains;
 	}
 
@@ -25,12 +25,12 @@ public class InMemoryUpcasterRegistry implements UpcasterRegistry {
 	}
 
 	@Override
-	public <T> UpcasterChain<T, Integer> getUpcasters(String subject) {
-		return (UpcasterChain<T, Integer>) chains.get(subject);
+	public <T> UpcasterChain<T> getUpcasters(String subject) {
+		return (UpcasterChain<T>) chains.get(subject);
 	}
 
 	@Override
-	public void registerChain(UpcasterChain<?, Integer> chain) {
+	public void registerChain(UpcasterChain<?> chain) {
 		chains.put(chain.getId(), chain);
 	}
 

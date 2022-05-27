@@ -11,8 +11,8 @@ import com.korfinancial.streaming.kopper.cast.UpcasterChain;
 
 public interface UpcasterRegistry {
 
-	<T> UpcasterChain<T, Integer> getUpcasters(String subject);
+	<T> UpcasterChain<T> getUpcasters(String subject);
 
-	void registerChain(UpcasterChain<?, Integer> chain);
+	void registerChain(UpcasterChain<?> chain);
 
 }

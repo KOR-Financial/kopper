@@ -7,10 +7,10 @@
 
 package com.korfinancial.streaming.kopper.cast;
 
-public interface Upcaster<O, V extends Comparable<V>> {
+public interface Upcaster<O> {
 
-	V getTargetVersion();
+	Integer getTargetVersion();
 
-	O upcast(O input, V inputVersion) throws UpcasterException;
+	O upcast(O input, Integer inputVersion) throws UpcasterException;
 
 }

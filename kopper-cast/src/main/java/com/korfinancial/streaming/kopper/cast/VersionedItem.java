@@ -7,13 +7,13 @@
 
 package com.korfinancial.streaming.kopper.cast;
 
-public class VersionedItem<O, V extends Comparable<V>> {
+public class VersionedItem<O> {
 
 	private final O item;
 
-	private final V version;
+	private final Integer version;
 
-	public VersionedItem(O item, V version) {
+	public VersionedItem(O item, Integer version) {
 		this.item = item;
 		this.version = version;
 	}
@@ -22,7 +22,7 @@ public class VersionedItem<O, V extends Comparable<V>> {
 		return item;
 	}
 
-	public V getVersion() {
+	public Integer getVersion() {
 		return version;
 	}
 

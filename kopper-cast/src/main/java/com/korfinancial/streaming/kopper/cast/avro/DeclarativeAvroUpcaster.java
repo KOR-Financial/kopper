@@ -25,19 +25,19 @@ import com.korfinancial.streaming.kopper.cast.UpcasterException;
 import com.korfinancial.streaming.kopper.cast.expressions.Evaluator;
 import com.korfinancial.streaming.kopper.cast.expressions.SpelEvaluator;
 
-public final class DeclarativeAvroUpcaster<V extends Comparable<V>> implements Upcaster<GenericRecord, V> {
+public final class DeclarativeAvroUpcaster implements Upcaster<GenericRecord> {
 
 	private final Schema targetSchema;
 
-	private final V targetSchemaVersion;
+	private final Integer targetSchemaVersion;
 
 	private final Evaluator evaluator;
 
-	public static <V extends Comparable<V>> Builder<V> builder(Schema schema, V version) {
-		return new Builder<>(schema, version);
+	public static Builder builder(Schema schema, Integer version) {
+		return new Builder(schema, version);
 	}
 
-	public static Builder<Integer> builder(SchemaRegistryClient schemaRegistryClient, String subject, Integer version) {
+	public static Builder builder(SchemaRegistryClient schemaRegistryClient, String subject, Integer version) {
 		// -- get the schema
 		io.confluent.kafka.schemaregistry.client.rest.entities.Schema s = schemaRegistryClient.getByVersion(subject,
 				version, true);
@@ -62,19 +62,19 @@ public final class DeclarativeAvroUpcaster<V extends Comparable<V>> implements U
 		}
 	}
 
-	private DeclarativeAvroUpcaster(Schema targetSchema, V targetSchemaVersion, Evaluator evaluator) {
+	private DeclarativeAvroUpcaster(Schema targetSchema, Integer targetSchemaVersion, Evaluator evaluator) {
 		this.targetSchema = targetSchema;
 		this.targetSchemaVersion = targetSchemaVersion;
 		this.evaluator = evaluator;
 		this.evaluator.setVariable("schema", targetSchema);
 	}
 
-	public V getTargetVersion() {
+	public Integer getTargetVersion() {
 		return targetSchemaVersion;
 	}
 
 	@Override
-	public GenericRecord upcast(GenericRecord input, V inputVersion) throws UpcasterException {
+	public GenericRecord upcast(GenericRecord input, Integer inputVersion) throws UpcasterException {
 		this.evaluator.setVariable("input", input);
 
 		GenericRecordBuilder builder = new GenericRecordBuilder(this.targetSchema);
@@ -118,38 +118,38 @@ public final class DeclarativeAvroUpcaster<V extends Comparable<V>> implements U
 		}
 	}
 
-	public static class Builder<V extends Comparable<V>> {
+	public static class Builder {
 
 		private final Schema targetSchema;
 
-		private final V targetVersion;
+		private final Integer targetVersion;
 
 		private Map<String, String> expressions = new HashMap<>();
 
 		private final EvaluationContext evaluationContext = new StandardEvaluationContext();
 
-		public Builder(Schema targetSchema, V targetVersion) {
+		public Builder(Schema targetSchema, Integer targetVersion) {
 			this.targetSchema = targetSchema;
 			this.targetVersion = targetVersion;
 		}
 
-		public Builder<V> withExpressions(Map<String, String> expressions) {
+		public Builder withExpressions(Map<String, String> expressions) {
 			this.expressions = expressions;
 			return this;
 		}
 
-		public Builder<V> withExpression(String fieldName, String expression) {
+		public Builder withExpression(String fieldName, String expression) {
 			this.expressions.put(fieldName, expression);
 			return this;
 		}
 
-		public Builder<V> withVariable(String name, Object value) {
+		public Builder withVariable(String name, Object value) {
 			this.evaluationContext.setVariable(name, value);
 			return this;
 		}
 
-		public DeclarativeAvroUpcaster<V> build() {
-			return new DeclarativeAvroUpcaster<V>(targetSchema, targetVersion,
+		public DeclarativeAvroUpcaster build() {
+			return new DeclarativeAvroUpcaster(targetSchema, targetVersion,
 					new SpelEvaluator(expressions, evaluationContext));
 		}
 

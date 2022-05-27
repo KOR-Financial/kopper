@@ -24,6 +24,7 @@ import com.korfinancial.streaming.kopper.cast.UpcasterChain;
 import com.korfinancial.streaming.kopper.cast.UpcasterException;
 import com.korfinancial.streaming.kopper.cast.VersionedItem;
 import com.korfinancial.streaming.kopper.cast.avro.AvroHelpers;
+import com.korfinancial.streaming.kopper.cast.avro.AvroUpcasterChain;
 import com.korfinancial.streaming.kopper.cast.avro.DeclarativeAvroUpcaster;
 import com.korfinancial.streaming.kopper.cast.avro.Payloads;
 import com.korfinancial.streaming.kopper.cast.registry.InMemoryUpcasterRegistry;
@@ -79,8 +80,8 @@ class AvroSchemaRegistryUpcasterTest {
 	void performUpcast() throws UpcasterException {
 		GenericRecord v1 = com.korfinancial.streaming.kopper.cast.avro.Payloads.RECORD_V1;
 
-		UpcasterChain<GenericRecord, Integer> chain = upcasterRegistry.getUpcasters(SUBJECT);
-		VersionedItem<GenericRecord, Integer> result = chain.doUpcast(new VersionedItem<>(v1, 1));
+		UpcasterChain<GenericRecord> chain = upcasterRegistry.getUpcasters(SUBJECT);
+		VersionedItem<GenericRecord> result = chain.doUpcast(new VersionedItem<>(v1, 1));
 
 		assertThat(result.getVersion()).isEqualTo(5);
 		assertThat(result.getItem()).isEqualTo(Payloads.RECORD_V5_WITHOUT_AGE);

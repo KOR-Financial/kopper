@@ -7,18 +7,18 @@
 
 package com.korfinancial.streaming.kopper.cast;
 
-public class UpcasterChainNode<O, V extends Comparable<V>> {
+public class UpcasterChainNode<O> {
 
-	private final Upcaster<O, V> upcaster;
+	private final Upcaster<O> upcaster;
 
-	private UpcasterChainNode<O, V> next;
+	private UpcasterChainNode<O> next;
 
-	public UpcasterChainNode(Upcaster<O, V> upcaster) {
+	public UpcasterChainNode(Upcaster<O> upcaster) {
 		this.upcaster = upcaster;
 	}
 
-	public VersionedItem<O, V> doUpcast(VersionedItem<O, V> input) throws UpcasterException {
-		VersionedItem<O, V> result;
+	public VersionedItem<O> doUpcast(VersionedItem<O> input) throws UpcasterException {
+		VersionedItem<O> result;
 
 		int cmp = input.getVersion().compareTo(this.upcaster.getTargetVersion());
 		if (cmp < 0) {
@@ -50,19 +50,19 @@ public class UpcasterChainNode<O, V extends Comparable<V>> {
 		}
 	}
 
-	public Upcaster<O, V> getUpcaster() {
+	public Upcaster<O> getUpcaster() {
 		return upcaster;
 	}
 
-	public UpcasterChainNode<O, V> getNext() {
+	public UpcasterChainNode<O> getNext() {
 		return next;
 	}
 
-	public V getVersion() {
+	public Integer getVersion() {
 		return upcaster.getTargetVersion();
 	}
 
-	public void setNext(UpcasterChainNode<O, V> next) {
+	public void setNext(UpcasterChainNode<O> next) {
 		this.next = next;
 	}
 
