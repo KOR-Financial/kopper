@@ -9,7 +9,10 @@ package com.korfinancial.streaming.kopper.cast.avro;
 
 import java.util.Map;
 
+import com.korfinancial.streaming.kopper.cast.DeclarativeUpcasterChain;
+
 import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericRecord;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -17,11 +20,11 @@ import com.korfinancial.streaming.kopper.cast.UpcasterException;
 
 public class DeclarativeUpcasterTests extends AbstractUpcasterTests {
 
-	private static AvroUpcasterChain chain;
+	private static DeclarativeUpcasterChain<GenericRecord> chain;
 
 	@BeforeAll
 	static void beforeAll() throws Exception {
-		chain = new AvroUpcasterChain();
+		chain = new DeclarativeUpcasterChain<>();
 		chain.registerUpcaster(upcasterV3());
 		chain.registerUpcaster(upcasterV4());
 		chain.registerUpcaster(upcasterV5());

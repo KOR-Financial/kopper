@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.korfinancial.streaming.kopper.cast.Upcaster;
+
 import io.confluent.kafka.schemaregistry.ParsedSchema;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
@@ -20,12 +22,12 @@ import org.apache.avro.generic.GenericRecordBuilder;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
-import com.korfinancial.streaming.kopper.cast.Upcaster;
+import com.korfinancial.streaming.kopper.cast.DeclarativeUpcasterContext;
 import com.korfinancial.streaming.kopper.cast.UpcasterException;
 import com.korfinancial.streaming.kopper.cast.expressions.Evaluator;
 import com.korfinancial.streaming.kopper.cast.expressions.SpelEvaluator;
 
-public final class DeclarativeAvroUpcaster implements Upcaster<GenericRecord> {
+public final class DeclarativeAvroUpcaster implements Upcaster<GenericRecord, DeclarativeUpcasterContext> {
 
 	private final Schema targetSchema;
 
@@ -74,7 +76,7 @@ public final class DeclarativeAvroUpcaster implements Upcaster<GenericRecord> {
 	}
 
 	@Override
-	public GenericRecord upcast(GenericRecord input, Integer inputVersion) throws UpcasterException {
+	public GenericRecord upcast(DeclarativeUpcasterContext ctx, GenericRecord input, Integer inputVersion) throws UpcasterException {
 		this.evaluator.setVariable("input", input);
 
 		GenericRecordBuilder builder = new GenericRecordBuilder(this.targetSchema);

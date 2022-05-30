@@ -7,12 +7,14 @@
 
 package com.korfinancial.streaming.kopper.cast.registry;
 
+import com.korfinancial.streaming.kopper.cast.Upcaster;
 import com.korfinancial.streaming.kopper.cast.UpcasterChain;
+import com.korfinancial.streaming.kopper.cast.UpcasterContext;
 
-public interface UpcasterRegistry {
+public interface UpcasterRegistry<C extends UpcasterContext, UC extends UpcasterChain<?, C, ? extends Upcaster<?, C>>> {
 
-	<T> UpcasterChain<T> getUpcasters(String subject);
+	UC getUpcasters(String subject);
 
-	void registerChain(UpcasterChain<?> chain);
+	void registerChain(UC chain);
 
 }

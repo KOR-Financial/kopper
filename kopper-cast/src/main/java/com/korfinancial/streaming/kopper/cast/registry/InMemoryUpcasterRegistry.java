@@ -10,13 +10,15 @@ package com.korfinancial.streaming.kopper.cast.registry;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.korfinancial.streaming.kopper.cast.Upcaster;
 import com.korfinancial.streaming.kopper.cast.UpcasterChain;
+import com.korfinancial.streaming.kopper.cast.UpcasterContext;
 
-public class InMemoryUpcasterRegistry implements UpcasterRegistry {
+public class InMemoryUpcasterRegistry<C extends UpcasterContext, UC extends UpcasterChain<?, C, ? extends Upcaster<?, C>>> implements UpcasterRegistry<C, UC> {
 
-	private final Map<String, UpcasterChain<?>> chains;
+	private final Map<String, UC> chains;
 
-	public InMemoryUpcasterRegistry(Map<String, UpcasterChain<?>> chains) {
+	public InMemoryUpcasterRegistry(Map<String, UC> chains) {
 		this.chains = chains;
 	}
 
@@ -25,12 +27,12 @@ public class InMemoryUpcasterRegistry implements UpcasterRegistry {
 	}
 
 	@Override
-	public <T> UpcasterChain<T> getUpcasters(String subject) {
-		return (UpcasterChain<T>) chains.get(subject);
+	public UC getUpcasters(String subject) {
+		return chains.get(subject);
 	}
 
 	@Override
-	public void registerChain(UpcasterChain<?> chain) {
+	public void registerChain(UC chain) {
 		chains.put(chain.getId(), chain);
 	}
 

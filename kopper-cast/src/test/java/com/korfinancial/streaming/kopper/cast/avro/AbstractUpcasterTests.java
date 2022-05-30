@@ -7,6 +7,9 @@
 
 package com.korfinancial.streaming.kopper.cast.avro;
 
+import com.korfinancial.streaming.kopper.cast.UpcasterChain;
+import com.korfinancial.streaming.kopper.cast.basic.BasicUpcasterChain;
+
 import org.apache.avro.generic.GenericRecord;
 
 import com.korfinancial.streaming.kopper.cast.UpcasterException;
@@ -16,28 +19,28 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class AbstractUpcasterTests {
 
-	void readV1ToV5(AvroUpcasterChain chain) throws UpcasterException {
+	void readV1ToV5(UpcasterChain<GenericRecord, ?, ?> chain) throws UpcasterException {
 		VersionedItem<GenericRecord> result = chain.doUpcast(new VersionedItem<>(Payloads.RECORD_V1, 1));
 
 		assertThat(result.getVersion()).isEqualTo(5);
 		assertThat(result.getItem()).isEqualTo(Payloads.RECORD_V5_WITHOUT_AGE);
 	}
 
-	void readV2ToV5(AvroUpcasterChain chain) throws UpcasterException {
+	void readV2ToV5(UpcasterChain<GenericRecord, ?, ?> chain) throws UpcasterException {
 		VersionedItem<GenericRecord> result = chain.doUpcast(new VersionedItem<>(Payloads.RECORD_V2_WITH_AGE, 2));
 
 		assertThat(result.getVersion()).isEqualTo(5);
 		assertThat(result.getItem()).isEqualTo(Payloads.RECORD_V5);
 	}
 
-	void readV3ToV5(AvroUpcasterChain chain) throws UpcasterException {
+	void readV3ToV5(UpcasterChain<GenericRecord, ?, ?> chain) throws UpcasterException {
 		VersionedItem<GenericRecord> result = chain.doUpcast(new VersionedItem<>(Payloads.RECORD_V3, 3));
 
 		assertThat(result.getVersion()).isEqualTo(5);
 		assertThat(result.getItem()).isEqualTo(Payloads.RECORD_V5);
 	}
 
-	void readV4ToV5(AvroUpcasterChain chain) throws UpcasterException {
+	void readV4ToV5(UpcasterChain<GenericRecord, ?, ?> chain) throws UpcasterException {
 		VersionedItem<GenericRecord> result = chain.doUpcast(new VersionedItem<>(Payloads.RECORD_V4, 4));
 
 		assertThat(result.getVersion()).isEqualTo(5);

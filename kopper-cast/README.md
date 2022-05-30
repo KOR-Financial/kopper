@@ -51,17 +51,19 @@ version.
 A simple upcaster for upcasting `java.util.Properties` might look like this:
 
 ```java
-class PropertiesUpcasterV1 implements Upcaster<Properties, Integer> {
-    @Override
-    public Integer getTargetVersion() { return 1; }
+class PropertiesUpcasterV1 implements Upcaster<Properties, BasicUpcasterContext> {
+    // ...
 
     @Override
-    public Properties upcast(Properties input, Integer inputVersion) {
-        Properties output = input;
+    public Integer getTargetVersion() {
+        return targetVersion;
+    }
 
-        // your logic here
+    @Override
+    public Properties upcast(BasicUpcasterContext ctx, Properties input, Integer inputVersion) {
+        changes.forEach(input::setProperty);
 
-        return output;
+        return input;
     }
 }
 ```
@@ -79,8 +81,8 @@ The following snippet creates a chain and registers a few upcasters to it:
 public class MyApp {
     // ...
 
-    protected UpcasterChain<Properties, Integer> createChain() {
-        return UpcasterChain.<Properties, Integer>builder()
+    protected UpcasterChain<Properties, ?> createChain() {
+        return BasicUpcasterChain.<Properties, Upcaster<Properties, BasicUpcasterContext>>builder()
                 .register(new PropertiesUpcasterV1())
                 .register(new PropertiesUpcasterV2())
                 // ...
@@ -103,7 +105,7 @@ public class MyApp {
         Properties data = new Properties();
         data.setProperty("id", "ID");
 
-        VersionedItem<Properties, Integer> result = chain.doUpcast(new VersionedItem<>(data, 1));
+        VersionedItem<Properties> result = chain.doUpcast(new VersionedItem<>(data, 1));
 
         // do something with the result
     }
@@ -149,8 +151,8 @@ them to the `GenericRecordBuilder`:
 
 ```java
 public class MyClass {
-    private AvroUpcaster<Integer> upcasterV4() {
-        return new AvroUpcaster<>(Schemas.SCHEMA_V4, 4) {
+    private AvroUpcaster upcasterV4() {
+        return new AvroUpcaster(Schemas.SCHEMA_V4, 4) {
             @Override
             public GenericRecordBuilder upcast(GenericRecordBuilder builder, GenericRecord input) {
                 // -- check if the name was set
@@ -189,7 +191,7 @@ The following variables are available when evaluating expressions:
 
 ```java
 class MyClass {
-    private DeclarativeAvroUpcaster<Integer> upcasterV4() {
+    private DeclarativeAvroUpcaster upcasterV4() {
         return DeclarativeAvroUpcaster.builder(Schemas.SCHEMA_V4, 4)
                 .withExpression("firstname", "#input.name?.split('\\s', 2)[0] ?: ''")
                 .withExpression("lastname", "#input.name?.split('\\s', 2)[1] ?: ''")
@@ -204,13 +206,13 @@ passed into the expression engine to support additional functionality:
 
 ```java
 class MyClass {
-    private DeclarativeAvroUpcaster<Integer> upcasterV3() throws NoSuchMethodException {
+    private DeclarativeAvroUpcaster upcasterV3() throws NoSuchMethodException {
         return DeclarativeAvroUpcaster.builder(Schemas.SCHEMA_V3, 3)
                 .withExpression("age", "#input.age != null ? #parseInt(#input.age) : null")
                 .withVariable("parseInt", Integer.class.getDeclaredMethod("parseInt", String.class)).build();
     }
 
-    private DeclarativeAvroUpcaster<Integer> upcasterV5() throws NoSuchMethodException {
+    private DeclarativeAvroUpcaster upcasterV5() throws NoSuchMethodException {
         return DeclarativeAvroUpcaster.builder(Schemas.SCHEMA_V5, 5).withExpression("name",
                         "#asRecord(#schema.getField('name').schema(), {firstname: #input.firstname, lastname: #input.lastname})")
                 .withVariable("asRecord", AvroHelpers.class.getDeclaredMethod("asRecord", Schema.class, Map.class))

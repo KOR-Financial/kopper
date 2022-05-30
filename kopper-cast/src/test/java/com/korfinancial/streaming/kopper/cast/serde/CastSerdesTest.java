@@ -9,6 +9,10 @@ package com.korfinancial.streaming.kopper.cast.serde;
 
 import java.util.Map;
 
+import com.korfinancial.streaming.kopper.cast.DeclarativeUpcasterChain;
+import com.korfinancial.streaming.kopper.cast.DeclarativeUpcasterContext;
+import com.korfinancial.streaming.kopper.cast.basic.BasicUpcasterChain;
+
 import io.confluent.kafka.schemaregistry.avro.AvroSchema;
 import io.confluent.kafka.schemaregistry.client.MockSchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
@@ -21,7 +25,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.korfinancial.streaming.kopper.cast.avro.AvroHelpers;
-import com.korfinancial.streaming.kopper.cast.avro.AvroUpcasterChain;
 import com.korfinancial.streaming.kopper.cast.avro.DeclarativeAvroUpcaster;
 import com.korfinancial.streaming.kopper.cast.avro.Payloads;
 import com.korfinancial.streaming.kopper.cast.registry.InMemoryUpcasterRegistry;
@@ -58,10 +61,10 @@ class CastSerdesTest {
 
 	@BeforeEach
 	void setup() throws Exception {
-		UpcasterRegistry upcasterRegistry = new InMemoryUpcasterRegistry();
+		UpcasterRegistry<DeclarativeUpcasterContext, DeclarativeUpcasterChain<GenericRecord>> upcasterRegistry = new InMemoryUpcasterRegistry<>();
 
 		// @formatter-off
-		upcasterRegistry.registerChain(AvroUpcasterChain.builder(SUBJECT)
+		upcasterRegistry.registerChain(DeclarativeUpcasterChain.<GenericRecord>builder(SUBJECT)
 				.register(DeclarativeAvroUpcaster.builder(schemaRegistryClient, SUBJECT, 3)
 						.withExpression("age", "#input.age != null ? #parseInt(#input.age) : null")
 						.withVariable("parseInt", Integer.class.getDeclaredMethod("parseInt", String.class)).build())
