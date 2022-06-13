@@ -14,7 +14,8 @@ import com.korfinancial.streaming.kopper.cast.Upcaster;
 import com.korfinancial.streaming.kopper.cast.UpcasterChain;
 import com.korfinancial.streaming.kopper.cast.UpcasterContext;
 
-public class InMemoryUpcasterRegistry<C extends UpcasterContext, UC extends UpcasterChain<?, C, ? extends Upcaster<?, C>>> implements UpcasterRegistry<C, UC> {
+public class InMemoryUpcasterRegistry<C extends UpcasterContext, UC extends UpcasterChain<?, C, ? extends Upcaster<?, C>>>
+		implements UpcasterRegistry<C, UC> {
 
 	private final Map<String, UC> chains;
 

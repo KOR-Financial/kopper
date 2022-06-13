@@ -7,17 +7,15 @@
 
 package com.korfinancial.streaming.kopper.cast.avro;
 
-import com.korfinancial.streaming.kopper.cast.Upcaster;
-import com.korfinancial.streaming.kopper.cast.basic.BasicUpcasterChain;
-
-import com.korfinancial.streaming.kopper.cast.basic.BasicUpcasterContext;
-
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.generic.GenericRecordBuilder;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import com.korfinancial.streaming.kopper.cast.Upcaster;
 import com.korfinancial.streaming.kopper.cast.UpcasterException;
+import com.korfinancial.streaming.kopper.cast.basic.BasicUpcasterChain;
+import com.korfinancial.streaming.kopper.cast.basic.BasicUpcasterContext;
 
 public class AvroUpcasterTests extends AbstractUpcasterTests {
 

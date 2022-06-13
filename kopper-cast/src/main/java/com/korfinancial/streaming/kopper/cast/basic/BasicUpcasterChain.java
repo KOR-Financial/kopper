@@ -16,7 +16,9 @@ import com.korfinancial.streaming.kopper.cast.UpcasterChain;
 import com.korfinancial.streaming.kopper.cast.UpcasterException;
 import com.korfinancial.streaming.kopper.cast.VersionedItem;
 
-public class BasicUpcasterChain<O, T extends Upcaster<O, BasicUpcasterContext>> implements UpcasterChain<O, BasicUpcasterContext, T> {
+public class BasicUpcasterChain<O, T extends Upcaster<O, BasicUpcasterContext>>
+		implements UpcasterChain<O, BasicUpcasterContext, T> {
+
 	private final String id;
 
 	public static <O, T extends Upcaster<O, BasicUpcasterContext>> Builder<O, T> builder() {
@@ -103,4 +105,5 @@ public class BasicUpcasterChain<O, T extends Upcaster<O, BasicUpcasterContext>> 
 		}
 
 	}
+
 }

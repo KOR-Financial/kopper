@@ -7,11 +7,9 @@
 
 package com.korfinancial.streaming.kopper.cast.avro;
 
-import com.korfinancial.streaming.kopper.cast.UpcasterChain;
-import com.korfinancial.streaming.kopper.cast.basic.BasicUpcasterChain;
-
 import org.apache.avro.generic.GenericRecord;
 
+import com.korfinancial.streaming.kopper.cast.UpcasterChain;
 import com.korfinancial.streaming.kopper.cast.UpcasterException;
 import com.korfinancial.streaming.kopper.cast.VersionedItem;
 

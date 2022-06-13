@@ -8,4 +8,5 @@
 package com.korfinancial.streaming.kopper.cast;
 
 public class DeclarativeUpcasterContext implements UpcasterContext {
+
 }

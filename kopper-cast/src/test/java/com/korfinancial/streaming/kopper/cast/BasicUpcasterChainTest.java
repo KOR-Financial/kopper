@@ -10,15 +10,14 @@ package com.korfinancial.streaming.kopper.cast;
 import java.util.Map;
 import java.util.Properties;
 
-import com.korfinancial.streaming.kopper.cast.basic.BasicUpcasterChain;
-import com.korfinancial.streaming.kopper.cast.basic.BasicUpcasterChainNode;
-
-import com.korfinancial.streaming.kopper.cast.basic.BasicUpcasterContext;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import com.korfinancial.streaming.kopper.cast.basic.BasicUpcasterChain;
+import com.korfinancial.streaming.kopper.cast.basic.BasicUpcasterChainNode;
+import com.korfinancial.streaming.kopper.cast.basic.BasicUpcasterContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -48,8 +47,8 @@ class BasicUpcasterChainTest {
 		pu4 = spy(new PropertiesUpcaster(6, Map.of("date", "date")));
 
 		// @formatter-off
-		chain = BasicUpcasterChain.<Properties, Upcaster<Properties, BasicUpcasterContext>>builder()
-			.register(pu1).register(pu2).register(pu3).register(pu4).build();
+		chain = BasicUpcasterChain.<Properties, Upcaster<Properties, BasicUpcasterContext>>builder().register(pu1)
+				.register(pu2).register(pu3).register(pu4).build();
 		// @formatter-on
 	}
 

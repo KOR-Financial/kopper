@@ -10,4 +10,5 @@ package com.korfinancial.streaming.kopper.cast.basic;
 import com.korfinancial.streaming.kopper.cast.UpcasterContext;
 
 public class BasicUpcasterContext implements UpcasterContext {
+
 }

@@ -8,9 +8,11 @@
 package com.korfinancial.streaming.kopper.cast;
 
 public interface UpcasterChain<O, C extends UpcasterContext, T extends Upcaster<O, C>> {
+
 	void registerUpcaster(T upcaster);
 
 	VersionedItem<O> doUpcast(VersionedItem<O> input) throws UpcasterException;
 
 	String getId();
+
 }

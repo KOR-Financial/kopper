@@ -9,10 +9,6 @@ package com.korfinancial.streaming.kopper.cast.serde;
 
 import java.util.Map;
 
-import com.korfinancial.streaming.kopper.cast.DeclarativeUpcasterChain;
-
-import com.korfinancial.streaming.kopper.cast.DeclarativeUpcasterContext;
-
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.serializers.AbstractKafkaAvroDeserializer;
 import io.confluent.kafka.serializers.GenericContainerWithVersion;
@@ -21,7 +17,8 @@ import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.common.serialization.Deserializer;
 
-import com.korfinancial.streaming.kopper.cast.basic.BasicUpcasterChain;
+import com.korfinancial.streaming.kopper.cast.DeclarativeUpcasterChain;
+import com.korfinancial.streaming.kopper.cast.DeclarativeUpcasterContext;
 import com.korfinancial.streaming.kopper.cast.VersionedItem;
 import com.korfinancial.streaming.kopper.cast.registry.UpcasterRegistry;
 
@@ -31,11 +28,14 @@ public class UpcastingDeserializer extends AbstractKafkaAvroDeserializer impleme
 
 	private boolean isKey;
 
-	public UpcastingDeserializer(final UpcasterRegistry<DeclarativeUpcasterContext, DeclarativeUpcasterChain<GenericRecord>> upcasterRegistry) {
+	public UpcastingDeserializer(
+			final UpcasterRegistry<DeclarativeUpcasterContext, DeclarativeUpcasterChain<GenericRecord>> upcasterRegistry) {
 		this.upcasterRegistry = upcasterRegistry;
 	}
 
-	UpcastingDeserializer(final UpcasterRegistry<DeclarativeUpcasterContext, DeclarativeUpcasterChain<GenericRecord>> upcasterRegistry, final SchemaRegistryClient client) {
+	UpcastingDeserializer(
+			final UpcasterRegistry<DeclarativeUpcasterContext, DeclarativeUpcasterChain<GenericRecord>> upcasterRegistry,
+			final SchemaRegistryClient client) {
 		schemaRegistry = client;
 		this.upcasterRegistry = upcasterRegistry;
 	}

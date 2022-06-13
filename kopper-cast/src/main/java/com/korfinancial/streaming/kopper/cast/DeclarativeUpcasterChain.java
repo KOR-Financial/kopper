@@ -7,14 +7,13 @@
 
 package com.korfinancial.streaming.kopper.cast;
 
-import com.korfinancial.streaming.kopper.cast.basic.BasicUpcasterChainNode;
-import com.korfinancial.streaming.kopper.cast.basic.BasicUpcasterContext;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class DeclarativeUpcasterChain<O> implements UpcasterChain<O, DeclarativeUpcasterContext, Upcaster<O, DeclarativeUpcasterContext>>{
+public class DeclarativeUpcasterChain<O>
+		implements UpcasterChain<O, DeclarativeUpcasterContext, Upcaster<O, DeclarativeUpcasterContext>> {
+
 	private final String id;
 
 	public static <O> Builder<O> builder() {
@@ -74,11 +73,11 @@ public class DeclarativeUpcasterChain<O> implements UpcasterChain<O, Declarative
 
 		private Node next;
 
-		public Node(Upcaster<O, DeclarativeUpcasterContext> upcaster) {
+		Node(Upcaster<O, DeclarativeUpcasterContext> upcaster) {
 			this.upcaster = upcaster;
 		}
 
-		public VersionedItem<O> doUpcast(DeclarativeUpcasterContext ctx, VersionedItem<O> input) throws UpcasterException {
+		VersionedItem<O> doUpcast(DeclarativeUpcasterContext ctx, VersionedItem<O> input) throws UpcasterException {
 			VersionedItem<O> result;
 
 			int cmp = input.getVersion().compareTo(this.upcaster.getTargetVersion());
@@ -87,7 +86,7 @@ public class DeclarativeUpcasterChain<O> implements UpcasterChain<O, Declarative
 				// -- means we will need to perform an upcast in order to get to the
 				// -- next version.
 				result = new VersionedItem<>(this.upcaster.upcast(ctx, input.getItem(), input.getVersion()),
-					this.upcaster.getTargetVersion());
+						this.upcaster.getTargetVersion());
 
 			}
 			else if (cmp > 0) {
@@ -98,7 +97,8 @@ public class DeclarativeUpcasterChain<O> implements UpcasterChain<O, Declarative
 			}
 			else {
 				// -- the version of the input is equal to the version of the upcaster. We
-				// -- don't have to do anything in this case except for returning the input.
+				// -- don't have to do anything in this case except for returning the
+				// input.
 				result = input;
 			}
 
@@ -111,21 +111,22 @@ public class DeclarativeUpcasterChain<O> implements UpcasterChain<O, Declarative
 			}
 		}
 
-		public Upcaster<O, DeclarativeUpcasterContext> getUpcaster() {
+		Upcaster<O, DeclarativeUpcasterContext> getUpcaster() {
 			return upcaster;
 		}
 
-		public Node getNext() {
+		Node getNext() {
 			return next;
 		}
 
-		public Integer getVersion() {
+		Integer getVersion() {
 			return upcaster.getTargetVersion();
 		}
 
-		public void setNext(Node next) {
+		void setNext(Node next) {
 			this.next = next;
 		}
+
 	}
 
 	public static class Builder<O> {
@@ -154,4 +155,5 @@ public class DeclarativeUpcasterChain<O> implements UpcasterChain<O, Declarative
 		}
 
 	}
+
 }

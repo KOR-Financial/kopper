@@ -7,16 +7,13 @@
 
 package com.korfinancial.streaming.kopper.cast.avro;
 
-import com.korfinancial.streaming.kopper.cast.UpcasterContext;
-
-import com.korfinancial.streaming.kopper.cast.basic.BasicUpcasterContext;
-
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.generic.GenericRecordBuilder;
 
 import com.korfinancial.streaming.kopper.cast.Upcaster;
 import com.korfinancial.streaming.kopper.cast.UpcasterException;
+import com.korfinancial.streaming.kopper.cast.basic.BasicUpcasterContext;
 
 public abstract class AvroUpcaster implements Upcaster<GenericRecord, BasicUpcasterContext> {
 
@@ -39,7 +36,8 @@ public abstract class AvroUpcaster implements Upcaster<GenericRecord, BasicUpcas
 	}
 
 	@Override
-	public GenericRecord upcast(BasicUpcasterContext ctx, GenericRecord input, Integer inputVersion) throws UpcasterException {
+	public GenericRecord upcast(BasicUpcasterContext ctx, GenericRecord input, Integer inputVersion)
+			throws UpcasterException {
 		GenericRecordBuilder builder = new GenericRecordBuilder(targetSchema);
 
 		try {

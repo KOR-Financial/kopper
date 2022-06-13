@@ -9,10 +9,6 @@ package com.korfinancial.streaming.kopper.cast.serde;
 
 import java.util.Map;
 
-import com.korfinancial.streaming.kopper.cast.DeclarativeUpcasterChain;
-import com.korfinancial.streaming.kopper.cast.DeclarativeUpcasterContext;
-import com.korfinancial.streaming.kopper.cast.basic.BasicUpcasterChain;
-
 import io.confluent.kafka.schemaregistry.avro.AvroSchema;
 import io.confluent.kafka.schemaregistry.client.MockSchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
@@ -24,6 +20,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.korfinancial.streaming.kopper.cast.DeclarativeUpcasterChain;
+import com.korfinancial.streaming.kopper.cast.DeclarativeUpcasterContext;
 import com.korfinancial.streaming.kopper.cast.avro.AvroHelpers;
 import com.korfinancial.streaming.kopper.cast.avro.DeclarativeAvroUpcaster;
 import com.korfinancial.streaming.kopper.cast.avro.Payloads;
