@@ -3,7 +3,7 @@ Kopper cast provides generic upcasting capabilities for data read from any
 transport. It has specific extensions for reading data from kafka topics and
 casting them, allowing incompatible schema changes.
 
-## Why
+## Why?
 Through schema registry we are able to check if a new schema is compatible
 with a previously defined one. Depending on the compatibility level, there
 are constraints on what kind of changes may be done evolving from one
