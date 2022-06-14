@@ -13,4 +13,8 @@ public interface DynamicRecord {
 
 	GenericRecord record();
 
+	Object retrieveDirect(Class<? extends DynamicRecord> declaringClass, String fieldName);
+
+	void manipulateDirect(Class<? extends DynamicRecord> declaringClass, String fieldName, Object value);
+
 }

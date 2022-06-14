@@ -70,12 +70,6 @@
                 <artifactId>avro</artifactId>
                 <version>1.11.0</version>
             </dependency>
-
-            <dependency>
-                <groupId>org.apache.kafka</groupId>
-                <artifactId>kafka-streams</artifactId>
-                <version>3.0.1-SNAPSHOT-PATCH</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 

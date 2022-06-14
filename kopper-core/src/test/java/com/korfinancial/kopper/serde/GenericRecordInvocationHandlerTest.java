@@ -120,4 +120,49 @@ class GenericRecordInvocationHandlerTest {
 		assertThat(model.getStringMap()).isEmpty();
 	}
 
+	@Test
+	void testRetrieveDirect() {
+		String requiredValue = UUID.randomUUID().toString();
+		TestEnum requiredEnum = TestEnum.Option3;
+
+		List<String> originalList = List.of(UUID.randomUUID().toString(), UUID.randomUUID().toString());
+		Map<String, String> originalMap = Map.of(UUID.randomUUID().toString(), UUID.randomUUID().toString(),
+				UUID.randomUUID().toString(), UUID.randomUUID().toString());
+
+		TestModel model = TestModel.create(requiredValue, requiredEnum, originalList, originalMap);
+
+		assertThat(model.retrieveDirect(TestModel.class, "requiredValue")).isEqualTo(requiredValue);
+		assertThat(model.retrieveDirect(TestModel.class, "requiredEnum")).isEqualTo(requiredEnum);
+		assertThat((List<String>) model.retrieveDirect(TestModel.class, "stringList"))
+				.containsOnlyOnceElementsOf(originalList);
+		assertThat((Map<String, String>) model.retrieveDirect(TestModel.class, "stringMap"))
+				.containsExactlyInAnyOrderEntriesOf(originalMap);
+	}
+
+	@Test
+	void testManipulateDirect() {
+		TestModel model = TestModel.create();
+
+		String v = UUID.randomUUID().toString();
+		List<String> l = List.of(UUID.randomUUID().toString(), UUID.randomUUID().toString());
+		Map<String, String> m = Map.of(UUID.randomUUID().toString(), UUID.randomUUID().toString(),
+				UUID.randomUUID().toString(), UUID.randomUUID().toString());
+
+		assertThat(model.getRequiredValue()).isEqualTo("");
+		model.manipulateDirect(TestModel.class, "requiredValue", v);
+		assertThat(model.getRequiredValue()).isEqualTo(v);
+
+		assertThat(model.getOptionalValue()).isNull();
+		model.manipulateDirect(TestModel.class, "optionalValue", v);
+		assertThat(model.getOptionalValue()).isEqualTo(v);
+
+		assertThat(model.getStringList()).isEmpty();
+		model.manipulateDirect(TestModel.class, "stringList", l);
+		assertThat(model.getStringList()).containsOnlyOnceElementsOf(l);
+
+		assertThat(model.getStringMap()).isEmpty();
+		model.manipulateDirect(TestModel.class, "stringMap", m);
+		assertThat(model.getStringMap()).containsExactlyInAnyOrderEntriesOf(m);
+	}
+
 }
