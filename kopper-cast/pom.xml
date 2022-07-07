@@ -19,11 +19,6 @@
     <artifactId>kopper-cast</artifactId>
     <name>Kopper :: Cast</name>
 
-    <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.apache.avro</groupId>

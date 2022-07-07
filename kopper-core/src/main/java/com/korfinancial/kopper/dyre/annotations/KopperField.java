@@ -21,14 +21,4 @@ public @interface KopperField {
 	 */
 	boolean required() default true;
 
-	/**
-	 * The type of item within the collection.
-	 *
-	 * Due to Erasure of Generic types, we are unable to detect the actual type stored
-	 * within a generic collection. note: this field is only applicable for collection
-	 * fields (List or Map)
-	 * @return a Class indicating the type within the collection
-	 */
-	Class<?> itemType() default Void.class;
-
 }

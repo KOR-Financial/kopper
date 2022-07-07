@@ -48,11 +48,6 @@ public abstract class DyreUtils {
 			}
 
 			@Override
-			public Class<?> itemType() {
-				return cls;
-			}
-
-			@Override
 			public Class<? extends Annotation> annotationType() {
 				return KopperField.class;
 			}

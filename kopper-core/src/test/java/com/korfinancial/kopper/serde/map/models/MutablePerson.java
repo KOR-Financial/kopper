@@ -12,14 +12,13 @@ import java.util.Map;
 
 import com.korfinancial.kopper.dyre.DynamicRecord;
 import com.korfinancial.kopper.dyre.DynamicRecords;
-import com.korfinancial.kopper.dyre.annotations.KopperField;
 import com.korfinancial.kopper.dyre.annotations.KopperRecord;
 
 @KopperRecord
 public interface MutablePerson extends DynamicRecord {
 
 	static MutablePerson create(String name, State state, List<MutablePerson> siblings) {
-		return DynamicRecords.newRecord(MutablePerson.class,
+		return DynamicRecords.getInstance().newRecord(MutablePerson.class,
 				Map.of("name", name, "state", state, "siblings", siblings));
 	}
 
@@ -27,10 +26,9 @@ public interface MutablePerson extends DynamicRecord {
 
 	void setName(String name);
 
-	@KopperField(itemType = MutablePerson.class)
 	List<MutablePerson> getSiblings();
 
-	void setSiblings(@KopperField(itemType = MutablePerson.class) List<MutablePerson> siblings);
+	void setSiblings(List<MutablePerson> siblings);
 
 	State getState();
 

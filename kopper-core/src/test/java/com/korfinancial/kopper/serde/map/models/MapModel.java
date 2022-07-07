@@ -10,14 +10,11 @@ package com.korfinancial.kopper.serde.map.models;
 import java.util.Map;
 
 import com.korfinancial.kopper.dyre.DynamicRecord;
-import com.korfinancial.kopper.dyre.annotations.KopperField;
 
 public interface MapModel extends DynamicRecord {
 
-	@KopperField(itemType = String.class)
 	Map<String, String> getStringMap();
 
-	@KopperField(itemType = Person.class)
 	Map<String, Person> getPersonMap();
 
 }

@@ -8,7 +8,9 @@
 package com.korfinancial.kopper.dyre.decoders;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,55 +22,52 @@ import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.util.Utf8;
 
 import com.korfinancial.kopper.dyre.DynamicRecord;
-import com.korfinancial.kopper.dyre.DyreUtils;
 import com.korfinancial.kopper.dyre.GenericRecordInvocationHandler;
 import com.korfinancial.kopper.dyre.ValueMappingException;
-import com.korfinancial.kopper.dyre.annotations.KopperField;
 
 public class DefaultValueDecoder implements ValueDecoder {
 
 	final List<Class<?>> directTypes = List.of(byte[].class, Integer.class, Long.class, Float.class, Double.class,
 			Boolean.class, String.class);
 
-	public Object decode(Class<?> expected, Object actualValue, Annotation[] annotations) throws ValueMappingException {
+	public Object decode(Type expectedType, Object actualValue, Annotation[] annotations) throws ValueMappingException {
 		// -- return null if the actual field value is null
 		if (actualValue == null) {
 			return null;
 		}
 
-		if (DynamicRecord.class.isAssignableFrom(expected)) {
-			if (actualValue instanceof GenericRecord v) {
-				return Proxy.newProxyInstance(getClass().getClassLoader(), new Class<?>[] { expected },
-						new GenericRecordInvocationHandler(v));
+		if (expectedType instanceof Class<?>) {
+			Class<?> expectedClassType = (Class<?>) expectedType;
+			if (DynamicRecord.class.isAssignableFrom(expectedClassType)) {
+				if (actualValue instanceof GenericRecord v) {
+					return Proxy.newProxyInstance(getClass().getClassLoader(), new Class<?>[] { expectedClassType },
+							new GenericRecordInvocationHandler(v));
+				}
+
+				throw new ValueMappingException(
+						actualValue.getClass().getName() + " is not a " + GenericRecord.class.getName());
 			}
-
-			throw new ValueMappingException(
-					actualValue.getClass().getName() + " is not a " + GenericRecord.class.getName());
-		}
-		if (List.class.isAssignableFrom(expected)) {
-			KopperField anno = DyreUtils.annotation(annotations, KopperField.class);
-			if (anno == null) {
-				throw new ValueMappingException("No " + KopperField.class.getSimpleName() + " annotation found");
+			else {
+				return decodeValue(expectedClassType, actualValue);
 			}
-
-			return decodeList(anno.itemType(), actualValue);
-
 		}
-		else if (Map.class.isAssignableFrom(expected)) {
-			KopperField anno = DyreUtils.annotation(annotations, KopperField.class);
-			if (anno == null) {
-				throw new ValueMappingException("No " + KopperField.class.getSimpleName() + " annotation found");
+		else if (expectedType instanceof ParameterizedType) {
+			ParameterizedType parameterizedExpectedType = (ParameterizedType) expectedType;
+			Class<?> rawReturnType = (Class<?>) parameterizedExpectedType.getRawType();
+
+			if (List.class.isAssignableFrom(rawReturnType)) {
+				return decodeList((Class<?>) parameterizedExpectedType.getActualTypeArguments()[0], actualValue);
 			}
-
-			return decodeMap(anno.itemType(), actualValue);
-
+			else if (Map.class.isAssignableFrom(rawReturnType)) {
+				return decodeMap((Class<?>) parameterizedExpectedType.getActualTypeArguments()[0],
+						(Class<?>) parameterizedExpectedType.getActualTypeArguments()[1], actualValue);
+			}
 		}
-		else {
-			return decodeValue(expected, actualValue);
-		}
+
+		throw new ValueMappingException("Reached the end of the line. We have no idea what's happening!");
 	}
 
-	List<Object> decodeList(Class<?> expected, Object in) throws ValueMappingException {
+	List<Object> decodeList(Class<?> expectedValueType, Object in) throws ValueMappingException {
 		if (!(in instanceof GenericData.Array<?> array)) {
 			throw new ValueMappingException(
 					"Expected a " + GenericData.Array.class.getName() + " but received a " + in.getClass().getName());
@@ -77,13 +76,14 @@ public class DefaultValueDecoder implements ValueDecoder {
 		List<Object> result = new ArrayList<>();
 
 		for (Object obj : array) {
-			result.add(decode(expected, obj, new Annotation[] {}));
+			result.add(decode(expectedValueType, obj, new Annotation[] {}));
 		}
 
 		return Collections.unmodifiableList(result);
 	}
 
-	Map<Object, Object> decodeMap(Class<?> expected, Object in) throws ValueMappingException {
+	Map<Object, Object> decodeMap(Class<?> expectedKeyType, Class<?> expectedValueType, Object in)
+			throws ValueMappingException {
 		if (!(in instanceof Map m)) {
 			throw new ValueMappingException(
 					"Expected a " + GenericData.Array.class.getName() + " but received a " + in.getClass().getName());
@@ -94,8 +94,8 @@ public class DefaultValueDecoder implements ValueDecoder {
 		for (Object o : m.entrySet()) {
 			Map.Entry entry = (Map.Entry) o;
 
-			result.put(decodeValue(String.class, entry.getKey()),
-					decode(expected, entry.getValue(), new Annotation[] {}));
+			result.put(decodeValue(expectedKeyType, entry.getKey()),
+					decode(expectedValueType, entry.getValue(), new Annotation[] {}));
 		}
 
 		return Collections.unmodifiableMap(result);

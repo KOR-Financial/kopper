@@ -9,6 +9,8 @@ package com.korfinancial.kopper.dyre;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -82,8 +84,8 @@ public abstract class AvroUtils {
 		List<Schema.Field> fields = new ArrayList<>();
 		for (String fieldName : fieldNames) {
 			try {
-				Class<?> fieldClass = getClassOfField(fieldName, getters.get(fieldName), setters.get(fieldName));
-				Schema fieldSchema = schemaForField(fieldClass, annotations.get(fieldName));
+				Type fieldType = getTypeOfField(fieldName, getters.get(fieldName), setters.get(fieldName));
+				Schema fieldSchema = schemaForField(fieldType, annotations.get(fieldName));
 				fields.add(new Schema.Field(fieldName, fieldSchema));
 			}
 			catch (ValueMappingException vme) {
@@ -109,76 +111,71 @@ public abstract class AvroUtils {
 		}
 	}
 
-	private static Schema schemaForField(Class<?> type, Map<Class<? extends Annotation>, Annotation> annotations)
+	private static Schema schemaForField(Type type, Map<Class<? extends Annotation>, Annotation> annotations)
 			throws ValueMappingException {
+
 		KopperField anno = (KopperField) annotations.get(KopperField.class);
 
-		if (List.class.isAssignableFrom(type)) {
-			if (anno == null) {
-				throw new ValueMappingException("No KopperField annotation provided.");
+		if (type instanceof Class<?>) {
+			Class<?> clazz = (Class<?>) type;
+			if (DynamicRecord.class.isAssignableFrom(clazz)) {
+				return makeOptionalIfNeeded(schemaFromClass((Class<? extends DynamicRecord>) type), anno);
 			}
-
-			return makeOptionalIfNeeded(SchemaBuilder.array().items(schemaForField(anno.itemType(), annotations)),
-					anno);
-
-		}
-		else if (Map.class.isAssignableFrom(type)) {
-			if (anno == null) {
-				throw new ValueMappingException("No KopperField annotation provided.");
+			else if (String.class.isAssignableFrom(clazz)) {
+				return makeOptionalIfNeeded(SchemaBuilder.builder().stringType(), anno);
 			}
-
-			return makeOptionalIfNeeded(SchemaBuilder.map().values(schemaForField(anno.itemType(), annotations)), anno);
-
-		}
-		else if (type.isEnum()) {
-			List<String> symbols = new ArrayList<>();
-			for (Enum<?> ec : ((Class<? extends Enum<?>>) type).getEnumConstants()) {
-				symbols.add(ec.name());
+			else if (Boolean.class.isAssignableFrom(clazz)) {
+				return makeOptionalIfNeeded(SchemaBuilder.builder().booleanType(), anno);
 			}
+			else if (Integer.class.isAssignableFrom(clazz)) {
+				return makeOptionalIfNeeded(SchemaBuilder.builder().intType(), anno);
+			}
+			else if (Long.class.isAssignableFrom(clazz)) {
+				return makeOptionalIfNeeded(SchemaBuilder.builder().longType(), anno);
+			}
+			else if (Float.class.isAssignableFrom(clazz)) {
+				return makeOptionalIfNeeded(SchemaBuilder.builder().floatType(), anno);
+			}
+			else if (Double.class.isAssignableFrom(clazz)) {
+				return makeOptionalIfNeeded(SchemaBuilder.builder().doubleType(), anno);
+			}
+			else if (byte[].class.isAssignableFrom(clazz)) {
+				return makeOptionalIfNeeded(SchemaBuilder.builder().bytesType(), anno);
+			}
+			else if (clazz.isEnum()) {
+				List<String> symbols = new ArrayList<>();
+				for (Enum<?> ec : ((Class<? extends Enum<?>>) type).getEnumConstants()) {
+					symbols.add(ec.name());
+				}
 
-			Schema enumSchema = SchemaBuilder.enumeration(type.getSimpleName())
-					.symbols(symbols.toArray(new String[] {}));
-			return makeOptionalIfNeeded(enumSchema, anno);
+				Schema enumSchema = SchemaBuilder.enumeration(clazz.getSimpleName())
+						.symbols(symbols.toArray(new String[] {}));
+				return makeOptionalIfNeeded(enumSchema, anno);
+			}
+		}
+		else if (type instanceof ParameterizedType) {
+			ParameterizedType parameterizedType = (ParameterizedType) type;
+			Class<?> rawReturnType = (Class<?>) parameterizedType.getRawType();
 
+			if (List.class.isAssignableFrom(rawReturnType)) {
+				return makeOptionalIfNeeded(SchemaBuilder.array()
+						.items(schemaForField(parameterizedType.getActualTypeArguments()[0], annotations)), anno);
+			}
+			else if (Map.class.isAssignableFrom(rawReturnType)) {
+				return makeOptionalIfNeeded(SchemaBuilder.map()
+						.values(schemaForField(parameterizedType.getActualTypeArguments()[1], annotations)), anno);
+			}
 		}
-		else if (DynamicRecord.class.isAssignableFrom(type)) {
-			return makeOptionalIfNeeded(schemaFromClass((Class<? extends DynamicRecord>) type), anno);
-
-		}
-		else if (String.class.isAssignableFrom(type)) {
-			return makeOptionalIfNeeded(SchemaBuilder.builder().stringType(), anno);
-		}
-		else if (Boolean.class.isAssignableFrom(type)) {
-			return makeOptionalIfNeeded(SchemaBuilder.builder().booleanType(), anno);
-		}
-		else if (Integer.class.isAssignableFrom(type)) {
-			return makeOptionalIfNeeded(SchemaBuilder.builder().intType(), anno);
-		}
-		else if (Long.class.isAssignableFrom(type)) {
-			return makeOptionalIfNeeded(SchemaBuilder.builder().longType(), anno);
-		}
-		else if (Float.class.isAssignableFrom(type)) {
-			return makeOptionalIfNeeded(SchemaBuilder.builder().floatType(), anno);
-		}
-		else if (Double.class.isAssignableFrom(type)) {
-			return makeOptionalIfNeeded(SchemaBuilder.builder().doubleType(), anno);
-		}
-		else if (byte[].class.isAssignableFrom(type)) {
-			return makeOptionalIfNeeded(SchemaBuilder.builder().bytesType(), anno);
-		}
-		else {
-			throw new ValueMappingException(type.getName() + ": unsupported type");
-		}
+		throw new ValueMappingException(type.getTypeName() + ": unsupported type");
 	}
 
-	private static Class<?> getClassOfField(String fieldName, Method getter, Method setter)
-			throws ValueMappingException {
+	private static Type getTypeOfField(String fieldName, Method getter, Method setter) throws ValueMappingException {
 		if (getter != null) {
-			return getter.getReturnType();
+			return getter.getGenericReturnType();
 		}
 
 		if (setter != null && setter.getParameterTypes().length == 1) {
-			return setter.getParameterTypes()[0];
+			return setter.getGenericParameterTypes()[0];
 		}
 
 		throw new ValueMappingException("No getter or setter found for field " + fieldName);
