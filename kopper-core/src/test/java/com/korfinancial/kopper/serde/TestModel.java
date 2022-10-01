@@ -43,7 +43,7 @@ public interface TestModel extends DynamicRecord {
 	static TestModel create(String requiredValue, TestEnum requiredEnum, List<String> stringList,
 			Map<String, String> stringMap) {
 		// @formatter: off
-		return DynamicRecords.newRecord(TestModel.class, new HashMap<>() {
+		return DynamicRecords.getInstance().newRecord(TestModel.class, new HashMap<>() {
 			{
 				put("required_value", requiredValue);
 				put("optional_value", null);
@@ -84,7 +84,6 @@ public interface TestModel extends DynamicRecord {
 
 	// -- List
 
-	@KopperField(itemType = String.class)
 	List<String> getStringList();
 
 	void setStringList(List<String> value);
@@ -95,7 +94,6 @@ public interface TestModel extends DynamicRecord {
 
 	// -- Map
 
-	@KopperField(itemType = String.class)
 	Map<String, String> getStringMap();
 
 	void setStringMap(Map<String, String> value);

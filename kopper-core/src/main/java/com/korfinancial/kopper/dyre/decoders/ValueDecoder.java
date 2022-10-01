@@ -8,6 +8,7 @@
 package com.korfinancial.kopper.dyre.decoders;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 import com.korfinancial.kopper.dyre.ValueMappingException;
 
@@ -15,6 +16,6 @@ public interface ValueDecoder {
 
 	ValueDecoder DEFAULT_DECODER = new DefaultValueDecoder();
 
-	Object decode(Class<?> expected, Object actualValue, Annotation[] annotations) throws ValueMappingException;
+	Object decode(Type expected, Object actualValue, Annotation[] annotations) throws ValueMappingException;
 
 }

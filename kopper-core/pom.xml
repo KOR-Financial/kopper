@@ -19,17 +19,11 @@
     <name>Kopper :: Core</name>
 
     <properties>
-        <korstreams.version>0.1.41</korstreams.version>
         <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
         <spring-kafka.version>2.8.2</spring-kafka.version>
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>com.korfinancial</groupId>
-            <artifactId>kor-streams-spring-boot-starter</artifactId>
-            <version>${korstreams.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
@@ -46,6 +40,7 @@
             <version>${org.mapstruct.version}</version>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -58,22 +53,29 @@
             <version>${spring-kafka.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.korfinancial</groupId>
-            <artifactId>kor-streams-test</artifactId>
-            <version>${korstreams.version}</version>
-            <scope>test</scope>
-        </dependency>
+
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-streams</artifactId>
-            <version>3.0.1-SNAPSHOT-PATCH</version>
         </dependency>
 
         <!-- Overrides confluent avro due to security issue -->
         <dependency>
             <groupId>org.apache.avro</groupId>
             <artifactId>avro</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-schema-registry-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-avro-serializer</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
         </dependency>
 
         <dependency>
@@ -99,9 +101,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
                 <configuration>
-                    <release>${java.version}</release>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.mapstruct</groupId>
@@ -121,11 +121,6 @@
             </plugin>
 
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M5</version>
-            </plugin>
-            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
@@ -142,13 +137,6 @@
         <profile>
             <id>github</id>
             <repositories>
-                <repository>
-                    <id>github</id>
-                    <url>https://maven.pkg.github.com/kor-financial/*</url>
-                    <snapshots>
-                        <enabled>true</enabled>
-                    </snapshots>
-                </repository>
                 <repository>
                     <id>confluent</id>
                     <name>confluent</name>

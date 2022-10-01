@@ -22,10 +22,11 @@ import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientExcept
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.generic.GenericRecordBuilder;
-import org.apache.commons.lang3.StringUtils;
 
 import com.korfinancial.kopper.dyre.annotations.KopperRecord;
 import com.korfinancial.kopper.dyre.encoders.ValueEncoder;
+
+import static org.apache.commons.lang3.StringUtils.capitalize;
 
 public class DynamicRecords {
 
@@ -46,7 +47,7 @@ public class DynamicRecords {
 		instance = this;
 	}
 
-	public static <T extends DynamicRecord> T newRecord(Class<T> cls, Map<String, Object> initialValues) {
+	public <T extends DynamicRecord> T newRecord(Class<T> cls, Map<String, Object> initialValues) {
 		KopperRecord subAnno = cls.getDeclaredAnnotation(KopperRecord.class);
 		if (subAnno != null) {
 			String subject = subAnno.value();
@@ -55,7 +56,7 @@ public class DynamicRecords {
 			}
 
 			try {
-				return getInstance().newRecordFromSubject(cls, subject, initialValues);
+				return newRecordFromSubject(cls, subject, initialValues);
 			}
 			catch (Exception ex) {
 				throw new IllegalArgumentException(ex);
@@ -63,7 +64,7 @@ public class DynamicRecords {
 		}
 
 		throw new IllegalArgumentException(
-				"Can't decide where to get the schema from: no SubjectBasedRecord annotation has been found.");
+				"Can't decide where to get the schema from: no KopperRecord annotation has been found.");
 	}
 
 	public <T extends DynamicRecord> T newRecordFromSchema(Class<T> cls, Schema schema,
@@ -98,7 +99,7 @@ public class DynamicRecords {
 	}
 
 	public <T extends DynamicRecord> T newRecordFromSubject(Class<T> cls, String subject,
-			Map<String, Object> initialValues) throws RestClientException, IOException {
+			Map<String, Object> initialValues) throws IOException {
 		if (this.schemaRegistryClient == null) {
 			throw new RuntimeException("no schema registry configured");
 		}
@@ -115,8 +116,8 @@ public class DynamicRecords {
 		}
 	}
 
-	Method setterForClass(Class<?> cls, String fieldName) throws NoSuchMethodException {
-		String methodName = String.format("set%s", StringUtils.capitalize(fieldName));
+	private Method setterForClass(Class<?> cls, String fieldName) throws NoSuchMethodException {
+		String methodName = String.format("set%s", capitalize(fieldName));
 		List<Method> methods = Arrays.stream(cls.getMethods()).filter((m) -> m.getName().equals(methodName)).toList();
 
 		if (methods.size() > 1) {

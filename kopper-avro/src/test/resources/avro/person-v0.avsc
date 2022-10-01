@@ -1,0 +1,18 @@
+{
+  "namespace": "kopper.test",
+  "name": "Person",
+  "type": "record",
+  "doc": "A person",
+  "fields": [
+    {
+      "name": "id",
+      "type": "string",
+      "doc": "The unique identifier for a person"
+    },
+    {
+      "name": "name",
+      "type": "string",
+      "doc": "The name of the person"
+    }
+  ]
+}

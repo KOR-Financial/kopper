@@ -8,6 +8,8 @@
 package com.korfinancial.kopper.serde.map;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -169,7 +171,7 @@ class ValueDecoderTest {
 			arrUtf8.add(new Utf8(s));
 		}
 
-		Object result = ValueDecoder.DEFAULT_DECODER.decode(List.class, arrUtf8,
+		Object result = ValueDecoder.DEFAULT_DECODER.decode(new StringListType(), arrUtf8,
 				new Annotation[] { DyreUtils.kopperField(String.class, false) });
 
 		Assertions.assertThat(result).isEqualTo(input);
@@ -188,6 +190,29 @@ class ValueDecoderTest {
 		}
 
 		return builder.build();
+	}
+
+	// This could be done with
+	// ParameterizedTypeImpl.make(List.class, new Type[] { String.class }, null);
+	// But it's not being exported via module-info.java, so we can't use it without
+	// hacking things together
+	private static class StringListType implements ParameterizedType {
+
+		@Override
+		public Type[] getActualTypeArguments() {
+			return new Type[] { String.class };
+		}
+
+		@Override
+		public Type getRawType() {
+			return List.class;
+		}
+
+		@Override
+		public Type getOwnerType() {
+			return null;
+		}
+
 	}
 
 }

@@ -203,7 +203,7 @@ public class GenericRecordInvocationHandler implements InvocationHandler {
 
 		Object actualValue = record.get(fieldName);
 
-		return valueDecoder.decode(method.getReturnType(), actualValue, method.getAnnotations());
+		return valueDecoder.decode(method.getGenericReturnType(), actualValue, method.getAnnotations());
 	}
 
 	void setFieldValue(String fieldName, Method method, Object newValue) throws ValueMappingException {
