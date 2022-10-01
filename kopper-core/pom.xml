@@ -20,18 +20,11 @@
     <name>Kopper :: Core</name>
 
     <properties>
-
-        <korstreams.version>0.1.41</korstreams.version>
         <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
         <spring-kafka.version>2.8.2</spring-kafka.version>
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>com.korfinancial</groupId>
-            <artifactId>kor-streams-spring-boot-starter</artifactId>
-            <version>${korstreams.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
@@ -48,6 +41,7 @@
             <version>${org.mapstruct.version}</version>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -60,12 +54,7 @@
             <version>${spring-kafka.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.korfinancial</groupId>
-            <artifactId>kor-streams-test</artifactId>
-            <version>${korstreams.version}</version>
-            <scope>test</scope>
-        </dependency>
+
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-streams</artifactId>
@@ -75,6 +64,19 @@
         <dependency>
             <groupId>org.apache.avro</groupId>
             <artifactId>avro</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-schema-registry-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-avro-serializer</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
         </dependency>
 
         <dependency>
@@ -136,13 +138,6 @@
         <profile>
             <id>github</id>
             <repositories>
-                <repository>
-                    <id>github</id>
-                    <url>https://maven.pkg.github.com/kor-financial/*</url>
-                    <snapshots>
-                        <enabled>true</enabled>
-                    </snapshots>
-                </repository>
                 <repository>
                     <id>confluent</id>
                     <name>confluent</name>

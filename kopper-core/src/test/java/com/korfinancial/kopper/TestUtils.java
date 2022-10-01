@@ -23,21 +23,8 @@ import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecordBuilder;
-import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.common.serialization.Serde;
-import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.kafka.core.ConsumerFactory;
-import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.core.DefaultKafkaProducerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.core.ProducerFactory;
-import org.springframework.kafka.test.EmbeddedKafkaBroker;
-
-import com.korfinancial.kopper.dyre.DynamicRecord;
-import com.korfinancial.kopper.serde.KopperSerdes;
 
 public final class TestUtils {
 
@@ -52,14 +39,6 @@ public final class TestUtils {
 
 	public static Map<String, Object> serdeTestConfig() {
 		return Map.of("schema.registry.url", "mock://default");
-	}
-
-	public static <T extends DynamicRecord> KafkaTemplate<String, T> createProducer(Map<String, Object> producerConfig,
-			Class<T> cls, SchemaRegistryClient schemaRegistryClient) {
-		ProducerFactory<String, T> pf = new DefaultKafkaProducerFactory<>(producerConfig, Serdes.String().serializer(),
-				KopperSerdes.dynamicSerde(cls, schemaRegistryClient).serializer());
-
-		return new KafkaTemplate<>(pf);
 	}
 
 	public static String createStringFromFile(String path) {
@@ -119,16 +98,6 @@ public final class TestUtils {
 			last = iter.next();
 		}
 		return last;
-	}
-
-	public static <T extends DynamicRecord> Consumer<String, T> createConsumer(EmbeddedKafkaBroker embeddedKafkaBroker,
-			Serde<T> serde, String topic) {
-		ConsumerFactory<String, T> cf = new DefaultKafkaConsumerFactory<>(
-				MessagingConfig.consumerConfig(embeddedKafkaBroker), new StringDeserializer(), serde.deserializer());
-
-		Consumer<String, T> clientConsumer = cf.createConsumer();
-		embeddedKafkaBroker.consumeFromAnEmbeddedTopic(clientConsumer, topic);
-		return clientConsumer;
 	}
 
 }

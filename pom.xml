@@ -27,7 +27,11 @@
         <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
 
         <spring-boot.version>2.6.3</spring-boot.version>
-        <kafka-streams.version>3.0.1-SNAPSHOT-PATCH</kafka-streams.version>
+        <kafka-streams.version>3.2.0</kafka-streams.version>
+        <confluent.version>7.2.1</confluent.version>
+        <mockito.version>4.4.0</mockito.version>
+        <junit.version>5.8.2</junit.version>
+        <avro.version>1.11.0</avro.version>
 
         <sonar.organization>kor-financial</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -38,13 +42,13 @@
     <modules>
         <module>kopper-core</module>
         <module>kopper-cast</module>
+        <module>kopper-avro</module>
     </modules>
 
     <scm>
         <connection>scm:git:git@github.com:${kor.repository}.git</connection>
         <url>scm:git:git@github.com/${kor.repository}</url>
         <developerConnection>scm:git:https://github.com/${kor.repository}.git</developerConnection>
-        <tag>kor-streams-starter-0.1.49-SNAPSHOT</tag>
     </scm>
 
     <distributionManagement>
@@ -57,6 +61,22 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>io.confluent</groupId>
+                <artifactId>kafka-streams-avro-serde</artifactId>
+                <version>${confluent.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.confluent</groupId>
+                <artifactId>kafka-schema-registry-client</artifactId>
+                <version>${confluent.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.confluent</groupId>
+                <artifactId>kafka-avro-serializer</artifactId>
+                <version>${confluent.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
@@ -72,13 +92,38 @@
             <dependency>
                 <groupId>org.apache.avro</groupId>
                 <artifactId>avro</artifactId>
-                <version>1.11.0</version>
+                <version>${avro.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>org.apache.kafka</groupId>
-                <artifactId>kafka-streams</artifactId>
-                <version>3.0.1-SNAPSHOT-PATCH</version>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-params</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>3.19.0</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest-core</artifactId>
+                <version>2.2</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockito.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-junit-jupiter</artifactId>
+                <version>${mockito.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -170,21 +215,6 @@
     </build>
 
     <profiles>
-        <profile>
-            <id>github</id>
-            <repositories>
-                <repository>
-                    <id>github</id>
-                    <url>https://maven.pkg.github.com/kor-financial/*</url>
-                    <snapshots>
-                        <enabled>true</enabled>
-                    </snapshots>
-                </repository>
-            </repositories>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-        </profile>
         <profile>
             <id>activate-in-module</id>
             <activation>
