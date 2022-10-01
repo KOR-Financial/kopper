@@ -20,6 +20,8 @@ import org.apache.avro.generic.GenericRecord;
 import com.korfinancial.kopper.dyre.decoders.ValueDecoder;
 import com.korfinancial.kopper.dyre.encoders.ValueEncoder;
 
+import static org.springframework.util.StringUtils.capitalize;
+
 public class GenericRecordInvocationHandler implements InvocationHandler {
 
 	private final GenericRecord record;
@@ -92,6 +94,31 @@ public class GenericRecordInvocationHandler implements InvocationHandler {
 		}
 		else if (method.getName().equals("record")) {
 			return record;
+		}
+		else if (method.getName().equals("retrieveDirect")) {
+			Class<? extends DynamicRecord> cls = (Class<? extends DynamicRecord>) args[0];
+			String field = (String) args[1];
+
+			Method getter = cls.getMethod("get" + capitalize(field));
+			return getter.invoke(proxy);
+		}
+		else if (method.getName().equals("manipulateDirect")) {
+			Class<? extends DynamicRecord> cls = (Class<? extends DynamicRecord>) args[0];
+			String field = (String) args[1];
+
+			Method setter = null;
+			for (Method plausibleSetter : cls.getMethods()) {
+				if (plausibleSetter.getName().equals("set" + capitalize(field))) {
+					setter = plausibleSetter;
+					break;
+				}
+			}
+
+			if (setter == null) {
+				throw new ValueMappingException("no setter has been found for field " + field);
+			}
+
+			return setter.invoke(proxy, args[2]);
 		}
 		else if (method.getName().equals("equals")) {
 			if (args[0] == null && record != null) {

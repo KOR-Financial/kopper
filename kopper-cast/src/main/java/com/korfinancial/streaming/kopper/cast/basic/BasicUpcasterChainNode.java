@@ -5,19 +5,23 @@
  * Proprietary and confidential.
  */
 
-package com.korfinancial.streaming.kopper.cast;
+package com.korfinancial.streaming.kopper.cast.basic;
 
-public class UpcasterChainNode<O> {
+import com.korfinancial.streaming.kopper.cast.Upcaster;
+import com.korfinancial.streaming.kopper.cast.UpcasterException;
+import com.korfinancial.streaming.kopper.cast.VersionedItem;
 
-	private final Upcaster<O> upcaster;
+public class BasicUpcasterChainNode<O> {
 
-	private UpcasterChainNode<O> next;
+	private final Upcaster<O, BasicUpcasterContext> upcaster;
 
-	public UpcasterChainNode(Upcaster<O> upcaster) {
+	private BasicUpcasterChainNode<O> next;
+
+	public BasicUpcasterChainNode(Upcaster<O, BasicUpcasterContext> upcaster) {
 		this.upcaster = upcaster;
 	}
 
-	public VersionedItem<O> doUpcast(VersionedItem<O> input) throws UpcasterException {
+	public VersionedItem<O> doUpcast(BasicUpcasterContext ctx, VersionedItem<O> input) throws UpcasterException {
 		VersionedItem<O> result;
 
 		int cmp = input.getVersion().compareTo(this.upcaster.getTargetVersion());
@@ -25,7 +29,7 @@ public class UpcasterChainNode<O> {
 			// -- the input version is less than the version of the upcaster. This
 			// -- means we will need to perform an upcast in order to get to the
 			// -- next version.
-			result = new VersionedItem<>(this.upcaster.upcast(input.getItem(), input.getVersion()),
+			result = new VersionedItem<>(this.upcaster.upcast(ctx, input.getItem(), input.getVersion()),
 					this.upcaster.getTargetVersion());
 
 		}
@@ -46,15 +50,15 @@ public class UpcasterChainNode<O> {
 			return result;
 		}
 		else {
-			return next.doUpcast(result);
+			return next.doUpcast(ctx, result);
 		}
 	}
 
-	public Upcaster<O> getUpcaster() {
+	public Upcaster<O, BasicUpcasterContext> getUpcaster() {
 		return upcaster;
 	}
 
-	public UpcasterChainNode<O> getNext() {
+	public BasicUpcasterChainNode<O> getNext() {
 		return next;
 	}
 
@@ -62,7 +66,7 @@ public class UpcasterChainNode<O> {
 		return upcaster.getTargetVersion();
 	}
 
-	public void setNext(UpcasterChainNode<O> next) {
+	public void setNext(BasicUpcasterChainNode<O> next) {
 		this.next = next;
 	}
 

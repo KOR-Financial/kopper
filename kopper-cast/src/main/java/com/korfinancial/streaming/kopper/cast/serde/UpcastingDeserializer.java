@@ -17,21 +17,25 @@ import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.common.serialization.Deserializer;
 
-import com.korfinancial.streaming.kopper.cast.UpcasterChain;
+import com.korfinancial.streaming.kopper.cast.DeclarativeUpcasterChain;
+import com.korfinancial.streaming.kopper.cast.DeclarativeUpcasterContext;
 import com.korfinancial.streaming.kopper.cast.VersionedItem;
 import com.korfinancial.streaming.kopper.cast.registry.UpcasterRegistry;
 
 public class UpcastingDeserializer extends AbstractKafkaAvroDeserializer implements Deserializer<GenericRecord> {
 
-	private final UpcasterRegistry upcasterRegistry;
+	private final UpcasterRegistry<DeclarativeUpcasterContext, DeclarativeUpcasterChain<GenericRecord>> upcasterRegistry;
 
 	private boolean isKey;
 
-	public UpcastingDeserializer(final UpcasterRegistry upcasterRegistry) {
+	public UpcastingDeserializer(
+			final UpcasterRegistry<DeclarativeUpcasterContext, DeclarativeUpcasterChain<GenericRecord>> upcasterRegistry) {
 		this.upcasterRegistry = upcasterRegistry;
 	}
 
-	UpcastingDeserializer(final UpcasterRegistry upcasterRegistry, final SchemaRegistryClient client) {
+	UpcastingDeserializer(
+			final UpcasterRegistry<DeclarativeUpcasterContext, DeclarativeUpcasterChain<GenericRecord>> upcasterRegistry,
+			final SchemaRegistryClient client) {
 		schemaRegistry = client;
 		this.upcasterRegistry = upcasterRegistry;
 	}
@@ -50,7 +54,7 @@ public class UpcastingDeserializer extends AbstractKafkaAvroDeserializer impleme
 			throw new RuntimeException("Only records are supported as the root elements.");
 		}
 
-		UpcasterChain<GenericRecord> chain = upcasterRegistry.getUpcasters(topic + "-value");
+		DeclarativeUpcasterChain<GenericRecord> chain = upcasterRegistry.getUpcasters(topic + "-value");
 		if (chain == null) {
 			// -- no upcasters available, so we will just return what we got from the wire
 			return (GenericRecord) gr.container();

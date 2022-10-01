@@ -15,6 +15,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.korfinancial.streaming.kopper.cast.basic.BasicUpcasterChain;
+import com.korfinancial.streaming.kopper.cast.basic.BasicUpcasterChainNode;
+import com.korfinancial.streaming.kopper.cast.basic.BasicUpcasterContext;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -23,7 +27,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class UpcasterChainTest {
+class BasicUpcasterChainTest {
 
 	private PropertiesUpcaster pu1;
 
@@ -33,7 +37,7 @@ class UpcasterChainTest {
 
 	private PropertiesUpcaster pu4;
 
-	private UpcasterChain<Properties> chain;
+	private BasicUpcasterChain<Properties, ?> chain;
 
 	@BeforeEach
 	void beforeAll() {
@@ -43,14 +47,15 @@ class UpcasterChainTest {
 		pu4 = spy(new PropertiesUpcaster(6, Map.of("date", "date")));
 
 		// @formatter-off
-		chain = UpcasterChain.<Properties>builder().register(pu1).register(pu2).register(pu3).register(pu4).build();
+		chain = BasicUpcasterChain.<Properties, Upcaster<Properties, BasicUpcasterContext>>builder().register(pu1)
+				.register(pu2).register(pu3).register(pu4).build();
 		// @formatter-on
 	}
 
 	@Test
 	void testChainConstruction() {
 		// -- check the upcasters are there
-		UpcasterChainNode<Properties> current = chain.root;
+		BasicUpcasterChainNode<Properties> current = chain.getRoot();
 		assertThat(current.getVersion()).isEqualTo(2);
 		assertThat(current.getUpcaster()).isEqualTo(pu1);
 		assertThat(current.getNext()).isNotNull();
@@ -78,10 +83,10 @@ class UpcasterChainTest {
 
 		VersionedItem<Properties> result = chain.doUpcast(new VersionedItem<>(data, 1));
 
-		verify(pu1).upcast(any(), anyInt());
-		verify(pu2).upcast(any(), anyInt());
-		verify(pu3).upcast(any(), anyInt());
-		verify(pu4).upcast(any(), anyInt());
+		verify(pu1).upcast(any(), any(), anyInt());
+		verify(pu2).upcast(any(), any(), anyInt());
+		verify(pu3).upcast(any(), any(), anyInt());
+		verify(pu4).upcast(any(), any(), anyInt());
 
 		assertThat(result.getVersion()).isEqualTo(6);
 		assertThat(result.getItem()).isNotNull();
@@ -97,10 +102,10 @@ class UpcasterChainTest {
 
 		VersionedItem<Properties> result = chain.doUpcast(new VersionedItem<>(data, 4));
 
-		verify(pu1, never()).upcast(any(), anyInt());
-		verify(pu2, never()).upcast(any(), anyInt());
-		verify(pu3).upcast(any(), anyInt());
-		verify(pu4).upcast(any(), anyInt());
+		verify(pu1, never()).upcast(any(), any(), anyInt());
+		verify(pu2, never()).upcast(any(), any(), anyInt());
+		verify(pu3).upcast(any(), any(), anyInt());
+		verify(pu4).upcast(any(), any(), anyInt());
 
 		assertThat(result.getVersion()).isEqualTo(6);
 		assertThat(result.getItem()).isNotNull();
@@ -118,17 +123,17 @@ class UpcasterChainTest {
 
 		VersionedItem<Properties> result = chain.doUpcast(new VersionedItem<>(data, 6));
 
-		verify(pu1, never()).upcast(any(), anyInt());
-		verify(pu2, never()).upcast(any(), anyInt());
-		verify(pu3, never()).upcast(any(), anyInt());
-		verify(pu4, never()).upcast(any(), anyInt());
+		verify(pu1, never()).upcast(any(), any(), anyInt());
+		verify(pu2, never()).upcast(any(), any(), anyInt());
+		verify(pu3, never()).upcast(any(), any(), anyInt());
+		verify(pu4, never()).upcast(any(), any(), anyInt());
 
 		assertThat(result.getVersion()).isEqualTo(6);
 		assertThat(result.getItem()).isNotNull();
 		assertThat(result.getItem()).containsOnlyKeys("id", "username", "description", "name", "date");
 	}
 
-	static class PropertiesUpcaster implements Upcaster<Properties> {
+	static class PropertiesUpcaster implements Upcaster<Properties, BasicUpcasterContext> {
 
 		private final Integer targetVersion;
 
@@ -145,7 +150,7 @@ class UpcasterChainTest {
 		}
 
 		@Override
-		public Properties upcast(Properties input, Integer inputVersion) {
+		public Properties upcast(BasicUpcasterContext ctx, Properties input, Integer inputVersion) {
 			changes.forEach(input::setProperty);
 
 			return input;

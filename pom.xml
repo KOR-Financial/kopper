@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.korfinancial.streaming</groupId>
     <artifactId>kopper</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.5-SNAPSHOT</version>
     <name>Kopper</name>
     <packaging>pom</packaging>
 

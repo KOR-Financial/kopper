@@ -20,11 +20,11 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.korfinancial.streaming.kopper.cast.UpcasterChain;
+import com.korfinancial.streaming.kopper.cast.DeclarativeUpcasterChain;
+import com.korfinancial.streaming.kopper.cast.DeclarativeUpcasterContext;
 import com.korfinancial.streaming.kopper.cast.UpcasterException;
 import com.korfinancial.streaming.kopper.cast.VersionedItem;
 import com.korfinancial.streaming.kopper.cast.avro.AvroHelpers;
-import com.korfinancial.streaming.kopper.cast.avro.AvroUpcasterChain;
 import com.korfinancial.streaming.kopper.cast.avro.DeclarativeAvroUpcaster;
 import com.korfinancial.streaming.kopper.cast.avro.Payloads;
 import com.korfinancial.streaming.kopper.cast.registry.InMemoryUpcasterRegistry;
@@ -43,7 +43,7 @@ class AvroSchemaRegistryUpcasterTest {
 
 	private static SchemaRegistryClient schemaRegistryClient;
 
-	private UpcasterRegistry upcasterRegistry;
+	private UpcasterRegistry<DeclarativeUpcasterContext, DeclarativeUpcasterChain<GenericRecord>> upcasterRegistry;
 
 	@BeforeAll
 	static void beforeAll() throws RestClientException, IOException {
@@ -57,10 +57,10 @@ class AvroSchemaRegistryUpcasterTest {
 
 	@BeforeEach
 	void beforeEach() throws Exception {
-		upcasterRegistry = new InMemoryUpcasterRegistry();
+		upcasterRegistry = new InMemoryUpcasterRegistry<>();
 
 		// @formatter-off
-		upcasterRegistry.registerChain(AvroUpcasterChain.builder(SUBJECT)
+		upcasterRegistry.registerChain(DeclarativeUpcasterChain.<GenericRecord>builder(SUBJECT)
 				.register(DeclarativeAvroUpcaster.builder(schemaRegistryClient, SUBJECT, 3)
 						.withExpression("age", "#input.age != null ? #parseInt(#input.age) : null")
 						.withVariable("parseInt", Integer.class.getDeclaredMethod("parseInt", String.class)).build())
@@ -80,7 +80,7 @@ class AvroSchemaRegistryUpcasterTest {
 	void performUpcast() throws UpcasterException {
 		GenericRecord v1 = com.korfinancial.streaming.kopper.cast.avro.Payloads.RECORD_V1;
 
-		UpcasterChain<GenericRecord> chain = upcasterRegistry.getUpcasters(SUBJECT);
+		DeclarativeUpcasterChain<GenericRecord> chain = upcasterRegistry.getUpcasters(SUBJECT);
 		VersionedItem<GenericRecord> result = chain.doUpcast(new VersionedItem<>(v1, 1));
 
 		assertThat(result.getVersion()).isEqualTo(5);

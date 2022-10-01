@@ -12,15 +12,18 @@ import org.apache.avro.generic.GenericRecordBuilder;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import com.korfinancial.streaming.kopper.cast.Upcaster;
 import com.korfinancial.streaming.kopper.cast.UpcasterException;
+import com.korfinancial.streaming.kopper.cast.basic.BasicUpcasterChain;
+import com.korfinancial.streaming.kopper.cast.basic.BasicUpcasterContext;
 
 public class AvroUpcasterTests extends AbstractUpcasterTests {
 
-	private static AvroUpcasterChain chain;
+	private static BasicUpcasterChain<GenericRecord, Upcaster<GenericRecord, BasicUpcasterContext>> chain;
 
 	@BeforeAll
 	static void beforeAll() {
-		chain = new AvroUpcasterChain();
+		chain = new BasicUpcasterChain<>();
 		chain.registerUpcaster(upcasterV3());
 		chain.registerUpcaster(upcasterV4());
 		chain.registerUpcaster(upcasterV5());

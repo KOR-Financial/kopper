@@ -7,10 +7,6 @@
 
 package com.korfinancial.streaming.kopper.cast;
 
-public interface Upcaster<O, C extends UpcasterContext> {
-
-	Integer getTargetVersion();
-
-	O upcast(C ctx, O input, Integer inputVersion) throws UpcasterException;
+public class DeclarativeUpcasterContext implements UpcasterContext {
 
 }
