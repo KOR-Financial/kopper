@@ -1,5 +1,8 @@
 # Kopper
-A library for abstracting and evolving wire formats
+Kopper is an example project for demonstrating various use cases around abstracting and evolving wire formats
+
+## Disclaimer
+Kopper is not necessarily production-ready code. It lays out ways to implement conceptual patterns around schema evolution. Kopper is open to community contributions and interactions, and can over time become hardened enough to qualify for production use cases.
 
 ## Why
 
