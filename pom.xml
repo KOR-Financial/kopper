@@ -42,7 +42,6 @@
     <modules>
         <module>kopper-core</module>
         <module>kopper-cast</module>
-        <module>kopper-avro</module>
     </modules>
 
     <scm>

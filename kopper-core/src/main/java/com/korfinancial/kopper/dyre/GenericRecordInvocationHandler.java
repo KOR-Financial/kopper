@@ -20,7 +20,7 @@ import org.apache.avro.generic.GenericRecord;
 import com.korfinancial.kopper.dyre.decoders.ValueDecoder;
 import com.korfinancial.kopper.dyre.encoders.ValueEncoder;
 
-import static org.springframework.util.StringUtils.capitalize;
+import static org.apache.commons.lang3.StringUtils.capitalize;
 
 public class GenericRecordInvocationHandler implements InvocationHandler {
 
