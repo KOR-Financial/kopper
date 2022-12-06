@@ -19,7 +19,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.korfinancial.streaming</groupId>
     <artifactId>kopper</artifactId>
-    <version>0.0.8-SNAPSHOT</version>
+    <version>0.0.8</version>
     <name>Kopper</name>
     <packaging>pom</packaging>
 
@@ -57,7 +57,7 @@
         <connection>scm:git:git@github.com:${kor.repository}.git</connection>
         <url>scm:git:git@github.com/${kor.repository}</url>
         <developerConnection>scm:git:https://github.com/${kor.repository}.git</developerConnection>
-      <tag>HEAD</tag>
+      <tag>kopper-0.0.8</tag>
   </scm>
 
     <distributionManagement>
