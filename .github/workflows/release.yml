@@ -6,7 +6,8 @@ on:
 
 jobs:
   build:
-    runs-on: [ self-hosted ]
+    runs-on: ubuntu-latest
+
     steps:
       - name: clean
         run: |
@@ -24,6 +25,11 @@ jobs:
         uses: stCarolas/setup-maven@v4.5
         with:
           maven-version: 3.5.4
+      - name: Configure Git user
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+          
       - shell: bash
         run: |
           set -ex
@@ -65,10 +71,7 @@ jobs:
           </settings>
           EOF
 
-      - name: Configure Git user
-        run: |
-          git config user.email "actions@github.com"
-          git config user.name "GitHub Actions"
+          
       - name: Deploy new version
         shell: bash
         run: mvn -B -U release:prepare release:perform
